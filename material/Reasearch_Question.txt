@@ -1,0 +1,10 @@
+1. RQ1: Sinh viên đánh giá chất lượng và mức độ chấp nhận feedback AI như thế nào?
+	- Sinh viên thấy AI nhận xét có đúng không ? - ACCURACY
+	- Nhận xét có cụ thể và dễ hiểu không ? - SPECIFICITY, CLARITY
+	- Sinh viên có hiểu AI dựa vào đâu không ? - TRANSPARENCY
+	- Feedback có hữu ích không ? - USEFULNESS, ACTIONABILITY
+	- Có đồng tình không ? - ACCEPTANCE
+	- Có muốn bác bỏ hay tranh luận không ? - REJECTION
+	- Có sẵn sàng sửa câu trả lời không ? - WILLINGNESS
+2. RQ2: Mức độ đồng thuận của sinh viên khác nhau như thế nào giữa các loại feedback AI? (so sánh giữa các kiểu feedback)
+3. RQ3: Mức độ đồng thuận với feedback AI khác nhau như thế nào giữa hai nguồn sinh câu hỏi: codebase và graph? (nhận xét của sinh viên về bộ câu hỏi)
