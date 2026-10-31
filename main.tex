@@ -156,32 +156,57 @@ Different formats of formative feedback are grounded in distinct pedagogical pri
 While prior work has used automated comprehension checks to assess program understanding~\cite{lehtinen2021lets}, our work extends this approach to a structured viva defense preparation workflow involving collaborative team repositories. Unlike studies focusing on isolated CS1 programming tasks or hypothetical model-generated code snippets~\cite{zhang2024students,lehtinen2024askai}, PACE investigates student perceptions of multiple AI feedback formats in the context of authentic, multi-language capstone projects. Furthermore, by implementing a complexity-aware hybrid context router ($\tau = 10$), a three-layer guardrail architecture with XML delimiter sandboxing, and a role-decoupled Multi-LLM Ensemble, this study provides an empirical evaluation of guardrailed, multi-format formative feedback in software engineering education.
 
 % -------------------------------------------------------------------------
-\section{Proposed Methodology and System Architecture}
-\label{sec:methodology}
-Detail the proposed framework, system design, data pipelines, or algorithmic foundations.
+\section{The PACE System}
+\label{sec:system}\label{sec:methodology}
 
-\subsection{Architectural Overview}
-Equations must be numbered consecutively within parentheses at the right margin without section prefixes:
-\begin{equation}
-\label{eq:sample_formula}
-S(x, y) = \alpha \cdot A(x) + (1 - \alpha) \cdot B(y)
-\end{equation}
-where $S(x, y)$ represents the composite score, and $\alpha \in [0, 1]$ is a balancing parameter.
+Figure~\ref{fig:overview} summarizes the PACE pipeline, including repository analysis, complexity-aware context routing, question generation, and multi-format pedagogical evaluation.
 
-\subsection{Visual Representation and Accessibility}
-% Springer Guideline:
-% 1. Figures must have captions BELOW the illustration.
-% 2. Vector graphics (PDF/EPS) preferred over raster images.
-% 3. Under EU Accessibility Act & WCAG, use \Description{...} for figure Alt Text.
+% Keep the original TikZ figure unchanged.
 \begin{figure}[htbp]
-    \centering
-    \includegraphics[width=0.85\textwidth]{format_constructs.pdf}
-    \Description{A diagram depicting the conceptual constructs and measurement framework used for evaluation.}
-    \caption{Overview of the conceptual construct framework and evaluation metrics.}
-    \label{fig:framework}
+  \centering
+  \includegraphics[width=\textwidth]{fig1.eps}
+  \Description{Architectural overview of the PACE pipeline, including static analysis, hybrid routing, question generation, and multi-format evaluation.}
+  \caption{Overview of the PACE system pipeline, from repository analysis to multi-format feedback.}
+  \label{fig:overview}
 \end{figure}
 
-As shown in Fig.~\ref{fig:framework}, all illustrations must be referenced directly in the text. Captions are set in 9-point font, centered if single-line, and justified if multi-line.
+\subsection{Multi-Language Static Analysis and Complexity-Aware Context Routing}
+
+For each submitted team repository, PACE clones the target branch and parses C\#/.NET source code using Roslyn and Java (Spring Boot), JavaScript, and TypeScript (Express, NestJS, Hono) source code using tree-sitter. Extracted API endpoints and controllers are grouped into user-facing \emph{business functions} (e.g., ``budget management'' or ``asset auction'') through metadata analysis performed by Gemini 3.1 Flash Lite, subject to instructor review and confirmation.
+
+To assess code complexity and select an appropriate context representation, PACE computes the number of distinct function nodes $N_w$ in each business function's call graph, derived from entry points and directed call relationships. A complexity-aware hybrid router then selects the context representation. When $N_w \le 10$, the system retrieves raw source code (\texttt{Raw}) to preserve fine-grained details of conditional expressions. When $N_w > 10$, it uses a Mermaid control- and data-flow graph (\texttt{Graph}) containing ordered edges, branch conditions, and return types to reduce token overhead and syntactic noise. Scenario-based questions are generated for each business function using OpenAI \texttt{gpt-6-luna} (temperature 0.3, strict JSON schema output). Question generation follows a business-language-only constraint that prohibits technical keywords (such as \emph{Controller}, \emph{DTO}, or \emph{SQL}). Questions are organized into three difficulty levels based on exception branches: Happy Path, Single Exception, and Double Exception.
+
+\subsection{Guardrailed Multi-Format Evaluation Engine and Multi-LLM Ensemble}
+
+When a student submits $k = 4$ scenario answers across different business functions, PACE uses an atomic database transaction ($<200$ ms) with row-level locking (\texttt{SELECT FOR UPDATE}) to maintain data integrity before invoking external LLMs. Each submission is processed through a three-layer AI guardrail architecture: (1) an \emph{Input Guardrail} that applies 17 blacklist-based checks for prompt injection and jailbreak attempts in English and Vietnamese; (2) an \emph{Execution Guardrail} that blocks malicious scripts and binary payloads using compiled regular expressions and sanitizes Unicode control characters; and (3) an \emph{Output Guardrail} that validates strict JSON structure and checks for potential API key leakage.
+
+To reduce the risk of indirect prompt injection and reinforce the instruction hierarchy, the evaluation engine separates input components using XML delimiters:
+\begin{quote}
+\scriptsize
+\begin{verbatim}
+<ground_truth_context> {Raw code or Mermaid graph} </ground_truth_context>
+<exam_question> {Sanitized scenario question} </exam_question>
+<suggested_answer> {Reference suggested answer} </suggested_answer>
+<student_answer> {Sanitized student answer} </student_answer>
+\end{verbatim}
+\normalsize
+\end{quote}
+
+The system supports four feedback formats, assigned through a random permutation without replacement within each student ($\mathcal{F} = \{\text{Sandwich},$ $\text{Rubric},$ $\text{Explainable},$ $\text{Researching}\}$), ensuring that every student encounters each configuration exactly once:
+
+\begin{itemize}
+  \item \textbf{Sandwich}: Feedback structured into positive reinforcement, constructive criticism, and actionable next steps, generated by DeepSeek-V3 (\texttt{deepseek-chat}, temperature 0.2).
+
+  \item \textbf{Rubric}: Quantitative feedback assessing technical competencies using a five-point scoring scale and detailed commentary, generated by DeepSeek-V3.
+
+  \item \textbf{Explainable}: Evidence-based feedback incorporating explicit source-code citations (\texttt{code\_evidence}) and explanations of logical reasoning (\texttt{logic\_explanation}), generated by DeepSeek-V3.
+
+  \item \textbf{Researching (Multi-LLM Ensemble)}: A role-decoupled, two-stage architecture designed to mitigate grading biases and sycophancy associated with single-model evaluation. In Stage 1, DeepSeek-V3 serves as a \textit{Code Inspector}, extracting code evidence and identifying logical inconsistencies. In Stage 2, Groq (\texttt{openai/gpt-oss-120b}) serves as a \textit{Pedagogical Synthesizer and Rubric Grader}, integrating the inspection report from DeepSeek-V3 to generate comprehensive pedagogical feedback and rubric scores. A multistage fault-tolerance mechanism handles rate-limit errors (HTTP 429) through exponential backoff and falls back to single-model processing if downstream validation fails.
+\end{itemize}
+
+\subsection{Empirical Data Collection and Survey Instrumentation}
+
+After receiving feedback, students evaluate each feedback instance through a web interface using a 15-item questionnaire with a five-point Likert response scale ($1 = \text{Strongly disagree}$ to $5 = \text{Strongly agree}$). All items are positively keyed. Drawing on the Feedback Perceptions Questionnaire (FPQ), explainable AI trustworthiness, argument persuasiveness, psychological safety, and TAM/UTAUT frameworks, the 15 items assess information and pedagogical quality (\texttt{ACCURACY}, \texttt{SPECIFICITY}, \texttt{CLARITY}), explainability (\texttt{TRANSPARENCY}), usefulness and actionability (\texttt{USEFULNESS}, \texttt{ACTIONABILITY}), trust and fairness (\texttt{COMPETENCE TRUST}, \texttt{RELIABILITY}, \texttt{FAIRNESS}), affect and psychological safety (\texttt{AFFECT}, \texttt{PSYCHOLOGICAL SAFETY}), and behavioral acceptance (\texttt{ACCEPTANCE}, \texttt{PERSUASIVENESS}, \texttt{WILLINGNESS}, \texttt{BEHAVIORAL INTENTION}). The data export pipeline automatically excludes load-testing accounts (identified by MSSV values beginning with \texttt{K6}) to ensure that the resulting datasets contain only eligible student responses.
 
 % -------------------------------------------------------------------------
 \section{Empirical Evaluation and Survey Design}

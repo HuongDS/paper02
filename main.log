@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (MiKTeX 26.5) (preloaded format=pdflatex 2026.9.12)  31 OCT 2026 11:14
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (MiKTeX 26.5) (preloaded format=pdflatex 2026.9.12)  31 OCT 2026 11:31
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -950,26 +950,45 @@ LaTeX Font Info:    Font shape `T1/ntxtlf/m/it' will be
  [2{D:/TaiLieu_FA26/paper_tools/miktex/fonts/enc/dvips/tex-gyre/q-ts1.enc}]
 LaTeX Font Info:    Font shape `T1/ntxtt/m/n' will be
 (Font)              scaled to size 10.0pt on input line 120.
- [3] [4] [5]
-<./figures/format_constructs.pdf, id=213, 344.0896pt x 199.46492pt>
-File: ./figures/format_constructs.pdf Graphic file (type pdf)
-<use ./figures/format_constructs.pdf>
-Package pdftex.def Info: ./figures/format_constructs.pdf  used on input line 17
-8.
-(pdftex.def)             Requested size: 295.05711pt x 171.05255pt.
-<./figures/likert_items.pdf, id=216, 344.04536pt x 242.83112pt>
+ [3] [4]
+Package epstopdf Info: Source file: <fig1.eps>
+(epstopdf)                    date: 2026-10-28 11:10:06
+(epstopdf)                    size: 357553 bytes
+(epstopdf)             Output file: <fig1-eps-converted-to.pdf>
+(epstopdf)                    date: 2026-10-31 08:50:39
+(epstopdf)                    size: 36500 bytes
+(epstopdf)             Command: <miktex-epstopdf --outfile=fig1-eps-converted-t
+o.pdf fig1.eps>
+(epstopdf)             \includegraphics on input line 167.
+Package epstopdf Info: Output file is already uptodate.
+<fig1-eps-converted-to.pdf, id=205, 345.29pt x 142.5325pt>
+File: fig1-eps-converted-to.pdf Graphic file (type pdf)
+<use fig1-eps-converted-to.pdf>
+Package pdftex.def Info: fig1-eps-converted-to.pdf  used on input line 167.
+(pdftex.def)             Requested size: 347.12354pt x 143.29115pt.
+ [5] [6 <./fig1-eps-converted-to.pdf>]
+LaTeX Font Info:    Font shape `T1/ntxtlf/m/n' will be
+(Font)              scaled to size 7.0pt on input line 186.
+LaTeX Font Info:    Font shape `T1/ntxtt/m/n' will be
+(Font)              scaled to size 7.0pt on input line 186.
+LaTeX Font Info:    Font shape `T1/ntxtlf/m/n' will be
+(Font)              scaled to size 7.3pt on input line 195.
+LaTeX Font Info:    Font shape `T1/ntxtlf/m/n' will be
+(Font)              scaled to size 5.5pt on input line 195.
+ [7]
+<./figures/likert_items.pdf, id=239, 344.04536pt x 242.83112pt>
 File: ./figures/likert_items.pdf Graphic file (type pdf)
 <use ./figures/likert_items.pdf>
-Package pdftex.def Info: ./figures/likert_items.pdf  used on input line 224.
+Package pdftex.def Info: ./figures/likert_items.pdf  used on input line 249.
 (pdftex.def)             Requested size: 295.05711pt x 208.26007pt.
- [6 <./figures/format_constructs.pdf>] [7 <./figures/likert_items.pdf>]
-<./figures/item_correlations.pdf, id=270, 306.00539pt x 264.49628pt>
+<./figures/item_correlations.pdf, id=241, 306.00539pt x 264.49628pt>
 File: ./figures/item_correlations.pdf Graphic file (type pdf)
 <use ./figures/item_correlations.pdf>
-Package pdftex.def Info: ./figures/item_correlations.pdf  used on input line 23
-9.
+Package pdftex.def Info: ./figures/item_correlations.pdf  used on input line 26
+4.
 (pdftex.def)             Requested size: 295.05711pt x 255.0355pt.
- [8 <./figures/item_correlations.pdf>] (main.bbl [9] [10]) [11] (main.aux)
+ [8] [9 <./figures/likert_items.pdf> <./figures/item_correlations.pdf>] (main.b
+bl [10] [11]) [12] (main.aux)
  ***********
 LaTeX2e <2026-06-01>
 L3 programming layer <2020/03/25>
@@ -978,13 +997,13 @@ Package rerunfilecheck Info: File `main.out' has not changed.
 (rerunfilecheck)             Checksum: C7B3B624B0051ABFECF285F6DFCFB23F;788.
  ) 
 Here is how much of TeX's memory you used:
- 16886 strings out of 467441
- 258855 string characters out of 5412424
- 706915 words of memory out of 5000000
- 45666 multiletter control sequences out of 15000+600000
- 693784 words of font info for 207 fonts, out of 8000000 for 9000
+ 16931 strings out of 467441
+ 259579 string characters out of 5412424
+ 706899 words of memory out of 5000000
+ 45682 multiletter control sequences out of 15000+600000
+ 704086 words of font info for 225 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 74i,9n,79p,2868b,648s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 74i,9n,79p,2868b,647s stack positions out of 10000i,1000n,20000p,200000b,200000s
  <C:\Users\ASUS\AppData\Local\MiKTeX\fonts/pk/ljfour/public/bbding/dpi600\bbd
 ing10.pk><D:/TaiLieu_FA26/paper_tools/miktex/fonts/type1/public/newtx/NewTXMI.p
 fb><D:/TaiLieu_FA26/paper_tools/miktex/fonts/type1/public/newtx/NewTXMI7.pfb><D
@@ -996,9 +1015,9 @@ ls/miktex/fonts/type1/public/newtx/txsys.pfb><D:/TaiLieu_FA26/paper_tools/mikte
 x/fonts/type1/public/newtx/ztmb.pfb><D:/TaiLieu_FA26/paper_tools/miktex/fonts/t
 ype1/public/newtx/ztmr.pfb><D:/TaiLieu_FA26/paper_tools/miktex/fonts/type1/publ
 ic/newtx/ztmri.pfb>
-Output written on main.pdf (11 pages, 321514 bytes).
+Output written on main.pdf (12 pages, 341621 bytes).
 PDF statistics:
- 467 PDF objects out of 1000 (max. 8388607)
- 75 named destinations out of 1000 (max. 500000)
- 26648 words of extra memory for PDF output out of 29859 (max. 10000000)
+ 468 PDF objects out of 1000 (max. 8388607)
+ 76 named destinations out of 1000 (max. 500000)
+ 33304 words of extra memory for PDF output out of 35830 (max. 10000000)
 
