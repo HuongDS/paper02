@@ -1,3 +1,1 @@
 1 (Fig. 1) - Architectural overview of the PACE pipeline, including static analysis, hybrid routing, question generation, and multi-format evaluation.
-2 (Fig. 2) - Distribution of student responses across Likert-scale evaluation items.
-3 (Fig. 3) - Correlation heatmap showing inter-construct relationships among survey items.
