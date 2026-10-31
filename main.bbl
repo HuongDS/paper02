@@ -167,6 +167,11 @@ Podsakoff, P.M., MacKenzie, S.B., Lee, J.Y., Podsakoff, N.P.: Common method
   recommended remedies. Journal of Applied Psychology  \textbf{88}(5),
   879--903 (2003). \doi{10.1037/0021-9010.88.5.879}
 
+\bibitem{seabold2010statsmodels}
+Seabold, S., Perktold, J.: Statsmodels: Econometric and statistical modeling
+  with {Python}. In: Proceedings of the 9th Python in Science Conference (SciPy
+  2010). pp. 92--96 (2010). \doi{10.25080/Majora-92bf1922-011}
+
 \bibitem{shute2008focus}
 Shute, V.J.: Focus on formative feedback. Review of Educational Research
   \textbf{78}(1),  153--189 (2008). \doi{10.3102/0034654307313795}

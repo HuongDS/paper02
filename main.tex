@@ -209,33 +209,84 @@ The system supports four feedback formats, assigned through a random permutation
 After receiving feedback, students evaluate each feedback instance through a web interface using a 15-item questionnaire with a five-point Likert response scale ($1 = \text{Strongly disagree}$ to $5 = \text{Strongly agree}$). All items are positively keyed. Drawing on the Feedback Perceptions Questionnaire (FPQ), explainable AI trustworthiness, argument persuasiveness, psychological safety, and TAM/UTAUT frameworks, the 15 items assess information and pedagogical quality (\texttt{ACCURACY}, \texttt{SPECIFICITY}, \texttt{CLARITY}), explainability (\texttt{TRANSPARENCY}), usefulness and actionability (\texttt{USEFULNESS}, \texttt{ACTIONABILITY}), trust and fairness (\texttt{COMPETENCE TRUST}, \texttt{RELIABILITY}, \texttt{FAIRNESS}), affect and psychological safety (\texttt{AFFECT}, \texttt{PSYCHOLOGICAL SAFETY}), and behavioral acceptance (\texttt{ACCEPTANCE}, \texttt{PERSUASIVENESS}, \texttt{WILLINGNESS}, \texttt{BEHAVIORAL INTENTION}). The data export pipeline automatically excludes load-testing accounts (identified by MSSV values beginning with \texttt{K6}) to ensure that the resulting datasets contain only eligible student responses.
 
 % -------------------------------------------------------------------------
-\section{Empirical Evaluation and Survey Design}
-\label{sec:experiments}
-Describe the experimental setting, participant demographics, questionnaire instrumentation, and procedure.
+\section{Experimental Design}
+\label{sec:method}\label{sec:experiments}
 
-\subsection{Instrumentation and Construct Measurements}
-% Springer Guideline:
-% Table captions should ALWAYS appear ABOVE the table.
-% Use professional booktabs rules (\toprule, \midrule, \bottomrule).
-\begin{table}[htbp]
-\centering
-\caption{Summary of survey constructs, dimensions, and operational definitions.}
-\label{tab:constructs}
-\begin{tabular}{llp{7.5cm}}
+\subsection{Context and Participants}
+
+The empirical evaluation was conducted in October 2026 in undergraduate software engineering capstone courses at FPT University, Vietnam. The research team invited final-year software engineering students to use PACE to prepare for their oral defenses (vivas), allowing them to practice explaining their teams' collaborative codebases. Participation was entirely voluntary, and students were explicitly assured that declining to participate would not affect their academic standing.
+
+The resulting dataset comprises responses from 86 undergraduate students working across 28 distinct project repositories. Collectively, they submitted 344 scenario-based viva answers ($k = 4$ responses per student, each addressing a different business function). The answers were written in Vietnamese, with an average length of approximately 51 whitespace-delimited words per response, and were collected between October 20 and October 26, 2026.
+
+\subsection{Survey Instrumentation}
+
+After submitting each answer and receiving AI-generated feedback, students evaluated the corresponding feedback instance through a web interface using a 15-item questionnaire with a five-point Likert response scale ($1 = \text{Strongly disagree}$ to $5 = \text{Strongly agree}$). All fifteen items were positively keyed, with higher scores indicating more favorable perceptions. Drawing on established principles of formative feedback~\cite{shute2008focus}, technology acceptance frameworks (TAM/UTAUT)~\cite{davis1989perceived,venkatesh2003user}, trust in automation~\cite{lee2004trust}, argument persuasiveness, and psychological safety, the instrument assesses six conceptual constructs, as detailed in Table~\ref{tab:instrument}.
+
+\begin{table}[t]
+\caption{Survey instrument (translated from Vietnamese into English), comprising 15 positively keyed Likert items grouped into six conceptual constructs.}
+\label{tab:instrument}
+\centering\scriptsize
+\setlength\tabcolsep{3pt}
+\begin{tabular}{@{}p{19mm}p{25mm}p{72mm}@{}}
 \toprule
-\textbf{Construct} & \textbf{Metric/Code} & \textbf{Operational Definition} \\
+Construct & Item Code & Statement \\
 \midrule
-Accuracy & ACC & Correctness of technical explanations and error diagnoses. \\
-Clarity & CLA & Ease of comprehension, structure, and readability. \\
-Specificity & SPE & Concrete pointers to lines of code or specific logic. \\
-Transparency & TRA & Explainability of why and how the feedback was derived. \\
-Actionability & ACT & Practical guidance on how to fix or refine the implementation. \\
-Acceptance & ACP & Student agreement and willingness to adopt recommendations. \\
+\multirow{3}{19mm}{Information \& Pedagogical Quality}
+ & \texttt{ACCURACY} & The AI's comment correctly identifies the problems and errors in my answer. \\
+ & \texttt{SPECIFICITY} & The AI points exactly to which part of my answer needs revisiting, rather than commenting in general. \\
+ & \texttt{CLARITY} & The wording and presentation of the AI's comment are clear and unambiguous. \\
+\midrule
+\multirow{1}{19mm}{Explainability}
+ & \texttt{TRANSPARENCY} & I understand which academic criteria and evidence the AI used to assess my answer. \\
+\midrule
+\multirow{2}{19mm}{Usefulness \& Actionability}
+ & \texttt{USEFULNESS} & This AI tool serves as an effective learning assistant for my project work. \\
+ & \texttt{ACTIONABILITY} & After reading the feedback, I know exactly which technical steps to take to improve my answer. \\
+\midrule
+\multirow{3}{19mm}{Trust, Reliability \& Fairness}
+ & \texttt{COMPETENCE TRUST} & I trust the technical expertise and analytical capability of this AI system. \\
+ & \texttt{RELIABILITY} & The AI assesses consistently and does not change its grading standards at random. \\
+ & \texttt{FAIRNESS} & The AI's assessment fairly reflects the effort and actual quality of my answer. \\
+\midrule
+\multirow{2}{19mm}{Affect \& Safety}
+ & \texttt{AFFECT} & I feel motivated and encouraged to keep learning after reading the AI's comments. \\
+ & \texttt{PSYCHOLOGICAL SAFETY} & Receiving AI feedback reduces the psychological pressure compared to human peer or instructor critique. \\
+\midrule
+\multirow{4}{19mm}{Acceptance \& Behavioral Intention}
+ & \texttt{ACCEPTANCE} & I agree with the AI's judgment regarding the strengths and weaknesses of my answer. \\
+ & \texttt{PERSUASIVENESS} & The arguments and evidence provided by the AI are highly persuasive, leaving me convinced without wanting to argue back. \\
+ & \texttt{WILLINGNESS} & Based on this comment, I am ready to start refactoring or revising my answer right away. \\
+ & \texttt{BEHAVIORAL INTENTION} & I intend to continue using this LLM system to receive feedback for future course projects. \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Table~\ref{tab:constructs} highlights the evaluation dimensions. The numbering of tables and figures continues sequentially throughout the manuscript.
+\subsection{Dataset and Experimental Procedure}
+
+The final dataset contains 344 complete feedback-rating records from 86 students, each of whom submitted one set of four answers. Every student evaluated all four feedback formats (\textit{Sandwich}, \textit{Rubric}, \textit{Explainable}, and \textit{Researching}), which were randomly assigned to their four answers without replacement. This design yielded 86 complete, balanced within-student blocks, with 86 rating instances per configuration.
+
+Regarding the distribution of question contexts, 280 instances (corresponding to 157 unique questions) used Mermaid flow-graph contexts (\texttt{Graph}), whereas 64 instances (corresponding to 33 unique questions across 13 repositories) used raw source-code contexts (\texttt{Raw}). Thirty-two students encountered at least one raw-code question, and 26 of these students answered questions under both context types, enabling within-student comparisons across context types.
+
+\subsection{Statistical Analysis Methods}
+
+To address our research questions while accounting for dependencies among observations from students, questions, and shared project repositories, we conducted statistical analyses using Python (\texttt{statsmodels})~\cite{seabold2010statsmodels}:
+
+\paragraph{Scores and Composite Summaries.}
+We calculated an exploratory multidomain composite, termed the \emph{AI Agreement Index} (AAI), as the mean of all fifteen positively keyed items. Individual items, such as \texttt{ACCEPTANCE}, were analyzed as direct measures of specific perceptions.
+
+\paragraph{RQ1 (Perceptions and Drivers).}
+To examine contemporaneous within-student associations with acceptance and behavioral intention, we fitted student fixed-effects linear regression models by demeaning predictors and outcomes within each student:
+\begin{equation}
+ y_{ij}-\bar y_j = \sum_{k=1}^{m}\beta_k(z_{kij}-\bar z_{kj}) + \sum_{c=2}^{4}\gamma_c(D_{cij}-\bar D_{cj}) + e_{ij},
+ \label{eq:drivers}
+\end{equation}
+where $i$ indexes feedback instances, $j$ indexes students, $y$ denotes the acceptance or behavioral intention outcome, and $D_c$ represents feedback configuration indicators, with \textit{Sandwich} as the reference category. Predictors (perceived quality, utility, trust, affect, and safety) were standardized using full-sample standard deviations before within-student demeaning.
+
+\paragraph{RQ2 (Feedback Configuration Comparisons).}
+Primary comparisons focused on paired contrasts among the four feedback formats. To account for clustering within shared repositories, we reported repository-level bootstrap confidence intervals based on 5,000 resamples with replacement. We supplemented these analyses with exploratory nonparametric Friedman tests~\cite{friedman1937use}, Kendall's $W$, and Holm-adjusted Wilcoxon signed-rank tests~\cite{holm1979simple}. To control the family-wise error rate across all 90 pairwise item-level contrasts ($6$ format pairs $\times$ $15$ survey items), we constructed simultaneous 95\% sensitivity bands using a centered, bootstrap-standardized maximum statistic. For AAI scores, we assessed equivalence using the two one-sided tests (TOST) procedure with equivalence margins of $\pm 0.25$, $\pm 0.20$, and $\pm 0.10$~\cite{lakens2017equivalence}.
+
+\paragraph{RQ3 (Context Type Association).}
+Because context type was determined by the complexity-aware router ($\tau = 10$) rather than randomly assigned, it was associated with repository complexity. To examine these contextual associations, we fitted exploratory student fixed-effects models incorporating context-type and feedback-configuration indicators, with uncertainty estimated using 5,000 cluster-level bootstrap resamples. We further assessed sensitivity to repository clustering by iteratively excluding one repository at a time and recomputing the point estimates.
 
 % -------------------------------------------------------------------------
 \section{Results and Discussion}
