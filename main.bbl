@@ -3,6 +3,11 @@
 \providecommand{\urlprefix}{URL }
 \providecommand{\doi}[1]{https://doi.org/#1}
 
+\bibitem{cameron2015cluster}
+Cameron, A.C., Miller, D.L.: A practitioner's guide to cluster-robust
+  inference. Journal of Human Resources  \textbf{50}(2),  317--372 (2015).
+  \doi{10.3368/jhr.50.2.317}
+
 \bibitem{carless2018feedback}
 Carless, D., Boud, D.: The development of student feedback literacy: Enabling
   uptake of feedback. Assessment \& Evaluation in Higher Education

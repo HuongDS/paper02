@@ -1,0 +1,27 @@
+# S2. Experimental Procedure, Randomization, Blinding, and Ethics Documentation
+
+## 1. Batch Submission Sequence vs. Rating Sequence
+
+1. **Batch Answer Submission (`step-3-answer-questions.tsx` $\rightarrow$ `step-4-loading-ai.tsx`):** Each participating student selected four scenario questions on their team's repository, wrote all four answers in Vietnamese, and submitted the **four-answer array together in a single batch** before viewing any AI feedback.
+2. **Backend Random Configuration Permutation (`StudentSubmissionService.cs`):** Upon receiving a student's four-answer batch, the backend executed `Random.Shared.Shuffle` over the four `FeedbackFormat` enum values (`Sandwich`, `Rubric`, `Explainable`, `Researching`) without replacement and assigned one configuration to each of the four submitted answers (`index = 0..3`).
+3. **Submission-Order Carousel Navigation (`step-survey-rubric.tsx` & `survey-question-review.tsx`):** After batch evaluation completed, the frontend opened the survey carousel starting at `activeIndex = 0` (`Câu 1 / 4` through `Câu 4 / 4`) following the student's question submission order. For each question, a review modal (`survey-question-review.tsx`) displayed the scenario question, the student's saved answer, and the generated AI feedback with a button *"Bắt đầu đánh giá"* (*Start rating*), followed by the 15 five-point Likert items (`1: Hoàn toàn không đồng ý`, `2: Không đồng ý`, `3: Trung lập / Phân vân`, `4: Đồng ý`, `5: Hoàn toàn đồng ý`) and an optional free-text comment box. Completing all 15 items was required before advancing to the next question or submitting the survey.
+4. **Student Blinding (`survey-ai-feedback.tsx`):** The UI component `SurveyAiFeedback` rendered only the non-empty pedagogical text fields under generic Vietnamese headings (*"Điểm sáng & Nội dung hiểu đúng"*, *"Điểm cần hoàn thiện & Lưu ý kỹ thuật"*, *"Hướng dẫn cải thiện tiếp theo"*, *"Giải thích logic"*, *"Tổng hợp đánh giá"*, *"Đối chiếu mã nguồn"*, *"Hướng dẫn sư phạm"*, *"Nhận xét chung"*, *"Đánh giá theo tiêu chí của AI"*, *"Minh chứng mã nguồn"*). The interface **did not display** the configuration label (`Sandwich`, `Rubric`, `Explainable`, `Researching`), the model/provider identifiers (`models_involved` is never rendered), or the context-routing mode (`Raw` vs. `Graph`).
+
+## 2. Historical Collection Revision vs. Post-Collection Revisions
+
+- **Data Collection Interval:** October 20–26, 2026.
+- **Study-Window Repository Commits:** Backend commit `a2f61f0` (October 22, 2026) and Frontend commit `ab53a6f` (October 22, 2026).
+- **Post-Collection Repository Commits:** Frontend commit `cf7e40e` (October 27, 2026; admin Excel export) and Backend/Frontend commits `f60bbb5` / `61a1f17` (October 29, 2026; admin rubric-criteria export). The six frontend files included verbatim under `ui_source/` match commit `cf7e40e` (identical in student-facing survey components to `ab53a6f`).
+
+| Source file | Visible behaviour | SHA-256 |
+|---|---|---|
+| `src/app/test/page.tsx` | Join $\rightarrow$ select questions $\rightarrow$ write 4 answers $\rightarrow$ batch submit/generate feedback $\rightarrow$ survey. | `638c17d896412486dabb196643c402397da3b2c3c9bd2a9d95fd4535cb0d2cd5` |
+| `src/app/test/components/step-3-answer-questions.tsx` | Validates every selected answer and submits the four-answer array together as a batch. | `59de117ef1be678c574577e086424422b23beae8b9189de9db29b2903fdd3147` |
+| `src/app/test/components/step-4-loading-ai.tsx` | Invokes batch submission with the four-answer array, then enters the survey step. | `8db38d243d0f906dbf540d668b987b4382c923d83e2ed0e46937c88d080938db` |
+| `src/app/test/components/step-survey-rubric.tsx` | Per-question review modal precedes the 15-item rating panel; previous/next navigation (`Câu 1 / 4`..`Câu 4 / 4`). | `af0e74e0c5d68948ad1dc888f33141e52227cf2ac0656dddb29bae084eb1126d` |
+| `src/app/test/components/survey-question-review.tsx` | Review modal shows question, saved answer, rendered feedback, and button *"Bắt đầu đánh giá"*. | `5cf53f116a9575ae299075df23a6be281b72daf69a5878f64e4332b00df44678` |
+| `src/features/student-assessment/components/survey-ai-feedback.tsx` | Renders non-empty feedback sections without exposing configuration names, model names, or context type. | `d8f4496ea4bdccdaf88680857866728b639552076595be1665501b7fa235aa00` |
+
+## 3. Research Ethics, Repository Access, and Data Governance
+
+Before participation, the research team explained the study purpose and intended research use of survey responses in class in the presence of the course instructor. Participation and data contribution were voluntary, and students were explicitly assured that declining carried no academic, grading, or administrative penalty; however, individual signed consent forms, class sampling frames, and invitation counts were not separately logged. Classroom access and team repository registration were coordinated with course instructors and capstone mentors. Team project repositories were cloned for static parsing and LLM prompt construction using repository links submitted within the course workflow, without separate written third-party cloud LLM data-processing agreements. Personal email addresses, student IDs, raw repository source code, and individual free-text responses are excluded from shared research artifacts. No formal IRB approval number or formal exemption certificate is claimed.

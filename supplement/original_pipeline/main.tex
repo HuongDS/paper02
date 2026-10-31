@@ -1,0 +1,476 @@
+% =========================================================================
+% Main LaTeX Document for Springer Computer Science Proceedings (LNCS)
+% Formatted strictly according to Springer Author Guidelines (reference.pdf)
+% =========================================================================
+
+\documentclass{llncs}
+
+% -------------------------------------------------------------------------
+% 1. Character Encoding & Fonts
+% -------------------------------------------------------------------------
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+
+% Springer LNCS recommended font settings (Times Roman based)
+\usepackage{newtxtext}
+\usepackage[varvw]{newtxmath}
+
+% -------------------------------------------------------------------------
+% 2. Figures & Graphics
+% -------------------------------------------------------------------------
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,fit,calc,backgrounds}
+% Set search path for graphic files (e.g., pdf, eps, png)
+\graphicspath{{./figures/}{./}}
+
+% -------------------------------------------------------------------------
+% 3. Tables & Formatting
+% -------------------------------------------------------------------------
+\usepackage{booktabs}       % High-quality academic tables (avoid vertical lines)
+\usepackage{multirow}       % Multirow cells in tables
+\usepackage{array}          % Advanced column configurations
+
+% -------------------------------------------------------------------------
+% 4. Microtypography & Symbols
+% -------------------------------------------------------------------------
+\usepackage{microtype}      % Improves spacing and reduces overfull hboxes
+\usepackage{bbding}         % Provides \Envelope for corresponding author marking
+
+% -------------------------------------------------------------------------
+% 5. Hyperlinks & URLs (Springer eBook style)
+% -------------------------------------------------------------------------
+\usepackage{xcolor}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    citecolor=blue,
+    urlcolor=blue,
+    pdfstartview={FitH}
+}
+% Springer guidelines: URLs displayed in blue roman font
+\renewcommand\UrlFont{\color{blue}\rmfamily}
+\urlstyle{rm}
+
+% Conditional flag for RQ3 section (set \rqthreefalse to suppress)
+\newif\ifrqthree
+\rqthreetrue
+
+% =========================================================================
+% Front Matter
+% =========================================================================
+\begin{document}
+
+% --- Title ---
+% Guideline: Capitalize nouns, verbs, and all other words except articles,
+% prepositions, and conjunctions (Title Case).
+\title{Do Students Agree with LLM Feedback on Their Own Code? A Within-Subject Study of Four Feedback Configurations in Software Project Courses}
+
+% Running heads are disabled (uncomment if required later for camera-ready):
+%\titlerunning{Do Students Agree with LLM Feedback on Their Own Code?}
+
+% --- Authors ---
+% Guideline:
+% - Full given name before surname.
+% - Mark the corresponding author with (\Envelope).
+\author{
+    Phuc Sanh Nguyen \and
+    Song Huong Dang \and
+    Quang Hieu Le \and
+    Viet Bao Nguyen \and
+    \mbox{Phuc Thinh Do(\Envelope)}
+}
+
+%\authorrunning{P. S. Nguyen et al.}
+
+% --- Affiliation & Emails ---
+\institute{
+    FPT University, Ho Chi Minh City, Vietnam\\
+    \email{npsdn1906@gmail.com, dangsonghuong010405@gmail.com,\\
+    lequanghieu2504@gmail.com, babluokei4@gmail.com, ThinhDP2@fe.edu.vn}
+}
+
+\maketitle % Typeset title, authors, affiliations
+
+% =========================================================================
+% Abstract & Keywords
+% =========================================================================
+\begin{abstract}
+Oral defense (viva) in software engineering capstone projects assesses students' understanding of business logic and codebase architecture, yet manual evaluation is labor-intensive and general-purpose large language models (LLMs) risk context hallucinations and grading biases. We present PACE, a repository-grounded viva practice system integrating static call-graph extraction, complexity-aware context routing, input/output validation rules, and four assigned feedback configurations: three single-model formats (\textit{Sandwich}, \textit{Rubric}, and \textit{Explainable}) and a two-stage \textit{Researching} configuration designed with a single-model fallback. In a student-blinded, within-subject study across 28 team repositories, 86 students submitted four scenario answers as a batch before rating the four randomly assigned feedback configurations (344 instances). While students frequently agreed with the AI's judgment of strengths and weaknesses (\texttt{ACCEPTANCE}: $79.9\%$, mean $4.09$) and endorsed usefulness ($84.0\%$) and accuracy ($83.4\%$), far fewer instances rated the AI's arguments and evidence as convincing (\texttt{PERSUASIVENESS}: $30.8\%$ agree vs.\ $48.8\%$ disagree, mean $2.87$) or reported learning motivation (\texttt{AFFECT}: $41.9\%$); the 15-item unweighted AI Agreement Index (AAI) averaged $3.99$ (SD $0.60$, 95\% CI $[3.85, 4.13]$). All six paired 95\% repository-bootstrap confidence intervals for direct acceptance included zero, whereas exploratory AAI 90\% intervals lay within $\pm 0.25$ and item-level profiles showed higher actionability for \textit{Sandwich} and \textit{Researching}. These self-reported perceptions distinguish agreeing with a diagnostic verdict from finding its rationale persuasive, without establishing deep trust, actual answer revision, or learning gains.
+
+\keywords{Automated Viva Assessment \and Multi-LLM Ensemble \and Formative Feedback \and Pedagogical AI Guardrails \and Software Engineering Education.}
+\end{abstract}
+
+% =========================================================================
+% Main Content
+% =========================================================================
+
+\section{Introduction}
+\label{sec:intro}
+
+Formative feedback is effective only when learners accurately interpret, evaluate, and act upon the guidance they receive~\cite{hattie2007power,shute2008focus,carless2018feedback,winstone2017supporting}. In automated environments, learners' willingness to accept and act on feedback depends on perceived usefulness~\cite{davis1989perceived,venkatesh2003user}, calibrated trust, and tendencies toward algorithm aversion or appreciation~\cite{lee2004trust,dietvorst2015algorithm,logg2019algorithm}. While large language models (LLMs) enable scalable formative feedback in computing education~\cite{kasneci2023chatgpt,denny2024computing,dai2023can}, general-purpose models remain prone to code-context hallucinations~\cite{hellas2023exploring,kiesler2023exploring}, prompt injection vulnerabilities~\cite{liffiton2023codehelp}, and uneven learner trust across accuracy, specificity, and evidentiary transparency~\cite{escalante2023ai,zhang2024students,nazaretsky2024ai,er2025assessing}.
+
+Two technical and pedagogical gaps motivate this work. \textbf{Gap 1 (Automated Viva with Hybrid Context Routing):} Traditional input--output autograders cannot verify individual comprehension of collaborative, multi-language capstone repositories; although automated program questioning has been explored for small programs~\cite{lehtinen2021lets}, scenario-based oral defenses (vivas) integrating static call-graph extraction with complexity-aware context routing remain underexplored. \textbf{Gap 2 (Feedback Configurations and Single-Model Bias):} Single-model evaluators (\textit{LLM-as-a-Judge}) can exhibit sycophancy and grading bias~\cite{zheng2023judging}. While distinct formative paradigms—\textit{Sandwich}~\cite{parkes2013feedback}, \textit{Rubric}~\cite{jonsson2007use}, \textit{Explainable}~\cite{khosravi2022explainable}, and role-decoupled multi-model pipelines~\cite{du2024improving,zheng2023judging}—pursue complementary pedagogical goals, randomized within-subject evaluations of these configuration bundles on students' own capstone codebases remain scarce.
+
+To address these gaps, we present \textbf{PACE} (\textit{Project Assistance and Course Evaluation}), an AI-assisted viva preparation system deployed at FPT University. PACE parses C\#/.NET (Roslyn) and Java, JavaScript, and TypeScript (tree-sitter) repositories, routing business functions with $N_w \le 10$ call-graph nodes to raw source code (\texttt{Raw}) and those with $N_w > 10$ to Mermaid control/data-flow graphs (\texttt{Graph}) for scenario question generation. For answer evaluation, the architecture incorporates a three-stage validation pipeline and XML delimiter tags designed to separate student input from reference context across three single-LLM configurations (\textit{Sandwich}, \textit{Rubric}, \textit{Explainable}; \texttt{deepseek-chat}) and a fourth assigned configuration (\textit{Researching}) designed as a two-stage pipeline chaining \texttt{deepseek-chat} (\textit{Code Inspector}) with Groq \texttt{openai/gpt-oss-120b} (\textit{Pedagogical Synthesizer}) with automatic single-model fallback. Because our empirical study evaluates student perceptions rather than adversarial security or expert-graded accuracy benchmarks, these architectural mechanisms represent system design goals rather than empirically verified protection against prompt injection or sycophancy.
+
+In a randomized, student-blinded, within-subject study, 86 students wrote and submitted a batch of four scenario answers on their team repositories before viewing feedback, and then rated each of the four assigned feedback configurations on a 15-item positively keyed Likert instrument grounded in FPQ, XAI, argument persuasiveness, psychological safety, and TAM/UTAUT frameworks~\cite{cronbach1951coefficient,hayes2020use,podsakoff2003common,kim2019straightlining,vansonderen2013ineffectiveness}. We investigate three research questions:
+\begin{itemize}
+    \item[\textbf{RQ1}] How do students evaluate the content quality, perceived usefulness, argument persuasiveness, and direct acceptance of LLM-generated feedback on viva responses about their own capstone project codebases?
+    \item[\textbf{RQ2}] How do students' direct acceptance and multidomain ratings differ across the four assigned feedback configurations (\textit{Sandwich}, \textit{Rubric}, \textit{Explainable}, and \textit{Researching}) based on repository-bootstrap contrasts and secondary rank and mixed-effects tests~\cite{friedman1937use,holm1979simple,lakens2017equivalence}?
+    \item[\textbf{RQ3}] To what extent are student acceptance and perceived feedback quality associated with raw source-code contexts ($N_w \leq 10$) versus Mermaid flow-graph contexts ($N_w > 10$) in the deployed system?
+\end{itemize}
+
+This work contributes an integrated viva preparation workflow and a within-subject field evaluation extending automated program questioning~\cite{lehtinen2021lets} to collaborative capstone repositories. In particular, our findings distinguish high direct agreement with the AI's evaluative judgment ($79.9\%$) from markedly lower endorsement of the persuasiveness of its arguments ($30.8\%$), learning motivation ($41.9\%$), and future-use intention ($68.0\%$), without inferring deep trust, actual revision behavior, or learning gains. Section~\ref{sec:related_work} reviews related work; Section~\ref{sec:methodology} details the PACE system and study-version provenance; Section~\ref{sec:experiments} describes the experimental procedure and analysis methods; Section~\ref{sec:results} presents results; Section~\ref{sec:discussion} discusses findings and threats to validity (Section~\ref{sec:threats}); and Section~\ref{sec:conclusion} concludes.
+
+% -------------------------------------------------------------------------
+\section{Related Work}
+\label{sec:related}\label{sec:related_work}
+
+This work draws on three main research areas: automated formative feedback in computing education, student acceptance and perceptions of AI-generated guidance, and pedagogical feedback configurations in software engineering assessment.
+
+\subsection{LLM-Generated Feedback in Programming Education}
+
+Automated assessment in computing education predates the emergence of generative AI, with early diagnostic tools focusing primarily on static error detection rather than actionable next steps~\cite{keuning2019automated}. While recent evaluations demonstrate that off-the-shelf LLMs can effectively identify issues in code, they remain susceptible to hallucinating nonexistent defects or suggesting misleading fixes~\cite{hellas2023exploring,kiesler2023exploring,dai2023can}. To address these safety and reliability concerns, specialized systems such as \textit{CodeHelp} have demonstrated the potential of incorporating guardrails to provide scalable programming assistance without directly supplying complete solutions~\cite{liffiton2023codehelp}. Building on these foundations, our approach shifts the evaluation focus from isolated, beginner-level coding snippets to comprehensive explanations of business logic and system architecture across evolving, multi-language team repositories.
+
+\subsection{Student Perceptions and Acceptance of AI Feedback}
+
+Understanding how learners respond to automated feedback requires examining established technology acceptance and trust frameworks. According to the Technology Acceptance Model (TAM) and UTAUT, perceived usefulness and ease of use are important predictors of technology acceptance and use~\cite{davis1989perceived,venkatesh2003user}, whereas appropriate reliance on automation requires calibrating trust to actual system reliability~\cite{lee2004trust}. Psychological phenomena such as algorithm aversion, in which users prematurely abandon algorithmic recommendations after observing errors, coexist with instances of algorithm appreciation~\cite{dietvorst2015algorithm,logg2019algorithm}. In computing education, empirical studies have revealed diverse learner preferences and perceptions: Zhang et al.\ documented student preferences for feedback that explicitly references source code~\cite{zhang2024students}, Er et al.\ identified continued advantages of human instructor feedback~\cite{er2025assessing}, and Nazaretsky et al.\ demonstrated that student trust is sensitive to the perceived source of AI-generated feedback~\cite{nazaretsky2024ai}. These findings highlight the importance of evaluating multiple dimensions of learner perception, including acceptance, argument persuasiveness, behavioral intention, trust, and affective responses, without conflating self-reported agreement with objective correctness.
+
+\subsection{Pedagogical Feedback Configurations and Multi-Model Orchestration}
+
+Different formats of formative feedback are grounded in distinct pedagogical principles. Sandwich feedback (\textit{Sandwich}), which places constructive criticism between supportive remarks, has been shown in controlled studies to improve learners' affective responses, even when performance gains remain modest~\cite{parkes2013feedback}. Explicit scoring rubrics (\textit{Rubric}) establish transparent evaluation criteria and promote grading consistency~\cite{jonsson2007use}, while evidence-based explanations (\textit{Explainable}) aim to support trust calibration by providing explicit references to source code~\cite{khosravi2022explainable}. Because single-model evaluators (\textit{LLM-as-a-Judge}) can exhibit verbosity, position, and sycophancy biases~\cite{zheng2023judging}, multi-agent debate and multi-stage orchestration have been explored on benchmark tasks with the goal of improving reasoning factuality~\cite{du2024improving,zheng2023judging}. However, sequential inspection-and-synthesis pipelines differ from multi-agent debate, and prior work offers limited within-subject evidence comparing complete deployed feedback bundles on students' own capstone codebases.
+
+\paragraph{Position Relative to Prior Literature.}
+
+While prior work has used automated comprehension checks to assess program understanding~\cite{lehtinen2021lets}, our work extends this approach to a structured viva defense preparation workflow involving collaborative team repositories. Unlike studies focusing on isolated CS1 programming tasks or model-generated code snippets~\cite{zhang2024students,lehtinen2024askai}, PACE investigates student perceptions of four deployed AI feedback configuration bundles in the context of authentic, multi-language capstone projects. This study contributes an empirical field evaluation of how students perceive these configuration bundles, rather than a new LLM algorithm or a benchmark validation of guardrail security.
+
+% -------------------------------------------------------------------------
+\section{The PACE System}
+\label{sec:system}\label{sec:methodology}
+
+Figure~\ref{fig:overview} summarizes the PACE pipeline, including repository analysis, complexity-aware context routing, question generation, and multi-format pedagogical evaluation.
+
+\begin{figure}[!ht]
+\centering
+\vspace{-2mm}
+\begin{tikzpicture}[
+  scale=0.86, every node/.style={transform shape},
+  font=\scriptsize,
+  box/.style={draw, rounded corners=2pt, align=center, minimum height=7.2mm, text width=19mm, fill=white},
+  fmt/.style={draw, rounded corners=2pt, align=center, minimum height=4.8mm, text width=17mm, fill=black!4},
+  arr/.style={-{Stealth[length=1.5mm]}, semithick},
+  node distance=3.2mm and 4.2mm]
+  \node[box] (repo) {Team\\repository};
+  \node[box, right=of repo] (parse) {Static analysis\\(Roslyn, tree-sitter)};
+  \node[box, right=of parse] (flow) {Business functions,\\call graph, Mermaid};
+  \node[box, right=of flow] (q) {LLM question\\generation};
+  \node[box, below=8mm of q] (ans) {Student answers\\4 questions};
+  \node[box, left=of ans] (perm) {Random\\permutation of\\4 configurations};
+  \node[box, left=of perm, text width=21mm] (ctx) {Reference\\context (code\\or graph) + guards};
+  \node[box, left=of ctx, text width=15mm] (llm) {Configuration-\\specific generation};
+  \node[fmt, below=5.8mm of llm, xshift=-4mm] (f1) {Sandwich};
+  \node[fmt, right=2mm of f1] (f2) {Rubric};
+  \node[fmt, right=2mm of f2] (f3) {Explainable};
+  \node[fmt, right=2mm of f3, text width=19mm] (f4) {Researching\\(two-stage design)};
+  \begin{scope}[on background layer]\node[draw, dashed, rounded corners=2pt, inner sep=1.3mm, fit=(f1)(f4)] (fmts) {};\end{scope}
+  \node[box, right=4mm of fmts, text width=15mm] (survey) {15-item rating\\+ free text};
+  \draw[arr] (repo) -- (parse); \draw[arr] (parse) -- (flow); \draw[arr] (flow) -- (q);
+  \draw[arr] (q) -- (ans); \draw[arr] (ans) -- (perm); \draw[arr] (perm) -- (ctx); \draw[arr] (ctx) -- (llm);
+  \draw[arr] (llm.south) -- ++(0,-2mm) -| (f1.north);
+  \draw[arr] (llm.south) -- ++(0,-2mm) -| (f2.north);
+  \draw[arr] (llm.south) -- ++(0,-2mm) -| (f3.north);
+  \draw[arr] (llm.south) -- ++(0,-2mm) -| (f4.north);
+  \draw[arr] (fmts) -- (survey);
+  \draw[arr, dashed] (flow.south) |- (ctx.north);
+\end{tikzpicture}
+\Description{Pipeline diagram. A team repository is parsed by static analysers into business functions, call graphs and Mermaid diagrams, which feed LLM question generation. Students answer four questions; the four feedback configurations are randomly permuted across the answers; the evaluator receives a reference context from the code and produces Sandwich, Rubric, Explainable or Researching feedback, which students rate on 15 items.}
+\caption{Overview of PACE. Questions and the evaluator's reference context are both derived from the student's own repository. Each student's four answers receive the four configurations in a random order.}
+\label{fig:overview}
+\vspace{-3mm}
+\end{figure}
+
+\subsection{Multi-Language Static Analysis and Complexity-Aware Context Routing}
+
+For each submitted team repository, PACE clones the target branch and parses C\#/.NET source code via Roslyn and Java (Spring Boot), JavaScript, and TypeScript (Express, NestJS, Hono) via tree-sitter. Extracted API endpoints and controllers are grouped into user-facing \emph{business functions} (e.g., ``budget management'' or ``asset auction''), either from a repository template or an LLM-assisted draft reviewed by the instructor. To select a context representation, PACE computes the number of distinct function nodes $N_w$ in each business function's call graph. A complexity-aware hybrid router selects raw source code (\texttt{Raw}) when $N_w \le 10$ to retain conditional expressions, and routes functions with $N_w > 10$ to a Mermaid control- and data-flow graph (\texttt{Graph}) with ordered edges and branch conditions. Scenario-based questions and a reference \texttt{suggestedAnswer} are generated at temperature $0.3$ under a business-language-only prompt constraint (excluding implementation identifiers such as \emph{Controller}, \emph{DTO}, or \emph{SQL}) across three exception-branch levels (Happy Path, Single Exception, Double Exception). During the October 20--26, 2026 study window, backend commits (\texttt{6a6c2b4}, \texttt{314e694} on October 21; study-window merge \texttt{a2f61f0} on October 22) transitioned question generation from Gemini (\texttt{gemini-3.1-flash-lite} in \texttt{appsettings.json}) to an OpenAI chat-completions client (supporting \texttt{gpt-4o-mini} and a checked-in placeholder default \texttt{gpt-6-luna} overridable via environment configuration); because provider-side request logs were not archived with the survey export, the exact immutable provider model snapshot per generated question is not independently verifiable from the exported dataset.
+
+\subsection{Multi-Format Evaluation Prompts, Schemas, and Fallback Provenance}
+
+When a student submits a batch of $k = 4$ scenario answers across distinct business functions, PACE saves the submission in a database transaction before invoking external LLMs. Submissions pass through three rule-based validation steps: (1) an \emph{Input Guardrail} checking 17 bilingual (English/Vietnamese) phrases associated with prompt-override requests (e.g., \emph{``ignore previous instructions''}, \emph{``give me 10 points''}); (2) an \emph{Execution Guardrail} applying a compiled regular expression against script/binary patterns (\texttt{base64}, \texttt{powershell}, \texttt{cmd.exe}, \texttt{eval(}) and stripping ASCII control characters; and (3) an \emph{Output Guardrail} stripping Markdown code fences, checking for token substrings (\texttt{sk-}, \texttt{Bearer}, \texttt{ApiKey}), and deserializing JSON. In the evaluation prompt, the system prompt instructs the model to act as a software engineering instructor, withhold overall numerical grades, and treat user content strictly as data, while the user prompt wraps inputs in four XML delimiter tags: \texttt{<ground\_truth\_context>} (method source code for \texttt{Raw}, or Mermaid graph plus ordered step edges for \texttt{Graph}, with automatic fallback to \texttt{Raw} if graph edges are empty), \texttt{<exam\_question>}, \texttt{<suggested\_answer>}, and \texttt{<student\_answer>}. These rules and XML delimiters represent prompt-engineering and validation design choices; our study does not empirically benchmark their adversarial robustness.
+
+Upon batch submission, PACE shuffles the four feedback configurations without replacement ($\mathcal{F} = \{\text{Sandwich},$ $\text{Rubric},$ $\text{Explainable},$ $\text{Researching}\}$) and assigns one configuration to each of the student's four answers. Three configurations invoke a single LLM call to the DeepSeek API (default model alias \texttt{deepseek-chat}, temperature $0.2$, \texttt{json\_object} mode) with format-specific JSON schema rules:
+\begin{itemize}
+    \item \textbf{Sandwich} requires keys \texttt{feedback\_type}, \texttt{positives}, \texttt{constructive\_criticism}, and \texttt{next\_steps} (specific methods/classes to review).
+    \item \textbf{Rubric} requires \texttt{feedback\_type} and a \texttt{criteria} array of objects with \texttt{name}, integer \texttt{score} ($1\text{--}5$), and \texttt{comment} (without an explicit \texttt{next\_steps} field).
+    \item \textbf{Explainable} requires \texttt{feedback\_type}, \texttt{code\_evidence} (citing methods, files, or branch conditions from the context), and \texttt{logic\_explanation}.
+    \item \textbf{Researching} is designed as a two-stage pipeline: Stage~1 prompts DeepSeek (\texttt{deepseek-chat}, temperature $0.2$) as a \textit{Code Inspector} to return JSON with \texttt{code\_evidence}, \texttt{technical\_accuracy}, and \texttt{logical\_flaws}; Stage~2 passes the question, answer, Stage~1 report, and reference context to Groq (default model \texttt{openai/gpt-oss-120b}, temperature $0.2$, \texttt{json\_object}, up to 3 attempts with exponential backoff on HTTP~429) as a \textit{Pedagogical Synthesizer} to output a JSON object combining \texttt{comment}, \texttt{positives}, \texttt{constructive\_criticism}, \texttt{next\_steps}, \texttt{code\_evidence}, \texttt{logic\_explanation}, two scored \texttt{criteria} (\emph{source-code technical accuracy} and \emph{architecture/flow comprehension}), and a nested \texttt{researching} object (\texttt{consensus\_summary}, \texttt{code\_inspection}, \texttt{pedagogical\_guidance}, and \texttt{models\_involved}).
+\end{itemize}
+Crucially, if Stage~1 or Stage~2 fails, times out, returns invalid JSON, or if the Groq key is unconfigured, the service automatically falls back to single-model DeepSeek evaluation using the \texttt{Researching} JSON schema template. Because that fallback schema template itself specifies both \texttt{DeepSeek-V3 (Code Inspector)} and \texttt{Groq-GPT-OSS-120B (Pedagogical Synthesizer)} inside \texttt{models\_involved}, all 86 exported \texttt{Researching} records contain both model names in nested JSON metadata, but this metadata reflects the schema template of the \emph{assigned configuration} rather than an independent provider execution log proving that both models executed on every instance. Similarly, one assigned \texttt{Rubric} record in the dataset contains an input-guardrail refusal payload (populating \texttt{positives}, \texttt{constructive\_criticism}, \texttt{next\_steps}, and \texttt{comment} instead of \texttt{criteria}) while the other 85 contain \texttt{criteria}. Full verbatim prompts, JSON schemas, and four de-identified feedback examples (one per configuration from the study export) are provided in the accompanying supplement (Sections~S1--S6).
+
+% -------------------------------------------------------------------------
+\section{Experimental Design}
+\label{sec:method}\label{sec:experiments}
+
+\subsection{Context, Participants, and Collection Procedure}
+
+The empirical evaluation was conducted between October 20 and October 26, 2026 in undergraduate software engineering capstone courses at FPT University, Vietnam. The research team visited randomly selected project classes in the presence of course instructors and invited final-year students to use PACE voluntarily to rehearse explaining their teams' collaborative repositories ahead of their oral defenses (vivas). Students were explicitly informed of the research purpose and assured that declining participation carried no academic or grading penalty; however, class sampling frames, invitation counts, and individual signed consent forms were not separately logged, so respondents represent a self-selected classroom sample. The final dataset comprises 344 complete feedback-rating instances from 86 students across 28 project repositories ($k = 4$ answers per student across 190 distinct questions and 152 business functions; mean answer length $\approx 51$ Vietnamese whitespace-delimited words). Load-testing accounts (student IDs prefixed with \texttt{K6}) were excluded by the export filter.
+
+\paragraph{Submission Sequence, Randomization, and Student Blinding.}
+To prevent feedback on early questions from altering how students composed subsequent answers, the web workflow required each student to write and submit \emph{all four scenario answers together as a single batch before viewing any AI feedback}. Upon batch submission, the backend randomly permuted the four feedback configurations without replacement and assigned one configuration to each of the four submitted answers ($1\text{--}4$). Students then entered the survey carousel, which stepped through their four answers in the \emph{order the questions were submitted} (Question~1 of~4 to Question~4 of~4, with previous/next navigation and a review modal displaying the question, the student's saved answer, and the generated feedback before rating). Thus, the assignment of the four configurations across the four answer positions was randomized per student, whereas the display sequence of questions followed the student's submission order rather than a separate post-submission display re-shuffling. The evaluation was \emph{student-blinded} in that the feedback renderer displayed only non-empty pedagogical text sections under generic Vietnamese headings (e.g., strengths, areas to improve, next steps, criterion scores, code evidence) and \emph{withheld} the configuration label (\textit{Sandwich}, \textit{Rubric}, \textit{Explainable}, \textit{Researching}), the model/provider identifiers (\texttt{models\_involved} is never rendered in the UI), and the context-routing mode (\texttt{Raw} vs.\ \texttt{Graph}), although structural differences among the rendered sections (such as 1--5 criterion scores or code-evidence blocks) were inherently visible. Post-collection repository commits (frontend \texttt{cf7e40e} on October 27 and backend/frontend \texttt{f60bbb5}/\texttt{61a1f17} on October 29 adding admin Excel export endpoints) did not alter the student-facing evaluation prompts or collection workflow.
+
+\subsection{Survey Instrumentation}
+
+For each of their four evaluated answers, students rated all 15 statements on a five-point Likert scale ($1 = \text{Strongly disagree}$ to $5 = \text{Strongly agree}$) and could provide an optional free-text comment (160 non-empty replies; not qualitatively coded for prevalence claims). Drawing on formative feedback~\cite{shute2008focus}, TAM/UTAUT~\cite{davis1989perceived,venkatesh2003user}, trust in automation~\cite{lee2004trust}, argument persuasiveness, and psychological safety, Table~\ref{tab:instrument} presents the 15 positively keyed items grouped into six conceptual domains (reflecting the synchronized October 31 criterion specification; Supplement~S1 documents the exact Vietnamese wording and historical export column mapping).
+
+\begin{table}[t]
+\caption{Survey instrument (translated from Vietnamese into English), comprising 15 positively keyed Likert items grouped into six conceptual constructs.}
+\label{tab:instrument}
+\centering\scriptsize
+\renewcommand{\arraystretch}{0.86}
+\setlength{\aboverulesep}{1pt}
+\setlength{\belowrulesep}{1.2pt}
+\setlength\tabcolsep{3pt}
+\begin{tabular}{@{}p{19mm}p{25mm}p{72mm}@{}}
+\toprule
+Construct & Item Code & Statement \\
+\midrule
+\multirow{2}{19mm}{Information \& Quality}
+ & \texttt{ACCURACY} & The AI's comment correctly identifies the problems and errors in my answer. \\
+ & \texttt{SPECIFICITY} & The AI points exactly to which part of my answer needs revisiting, rather than commenting in general. \\
+ & \texttt{CLARITY} & The wording and presentation of the AI's comment are clear and unambiguous. \\
+\midrule
+Explainability
+ & \texttt{TRANSPARENCY} & I understand which academic criteria and evidence the AI used to assess my answer. \\
+\midrule
+\multirow{2}{19mm}{Usefulness \& Actionability}
+ & \texttt{USEFULNESS} & This AI tool serves as an effective learning assistant for my project work. \\
+ & \texttt{ACTIONABILITY} & After reading the feedback, I know exactly which technical steps to take to improve my answer. \\
+\midrule
+\multirow{2}{19mm}{Trust \& Fairness}
+ & \texttt{COMPETENCE TRUST} & I trust the technical expertise and analytical capability of this AI system. \\
+ & \texttt{RELIABILITY} & The AI assesses consistently and does not change its grading standards at random. \\
+ & \texttt{FAIRNESS} & The AI's assessment fairly reflects the effort and actual quality of my answer. \\
+\midrule
+\multirow{2}{19mm}{Affect \& Safety}
+ & \texttt{AFFECT} & I feel motivated and encouraged to keep learning after reading the AI's comments. \\
+ & \texttt{PSYCHOLOGICAL SAFETY} & Receiving AI feedback reduces the psychological pressure compared to human peer or instructor critique. \\
+\midrule
+\multirow{3}{19mm}{Acceptance \& Intention}
+ & \texttt{ACCEPTANCE} & I agree with the AI's judgment regarding the strengths and weaknesses of my answer. \\
+ & \texttt{PERSUASIVENESS} & The arguments and evidence provided by the AI are highly persuasive, leaving me convinced without wanting to argue back. \\
+ & \texttt{WILLINGNESS} & Based on this comment, I am ready to start refactoring or revising my answer right away. \\
+ & \texttt{BEHAVIORAL INTENTION} & I intend to continue using this LLM system to receive feedback for future course projects. \\
+\bottomrule
+\end{tabular}
+\vspace{-2mm}
+\end{table}
+
+\subsection{Dataset Structure and Intention-to-Treat Assignment}
+
+Every student evaluated all four assigned configurations (\textit{Sandwich}, \textit{Rubric}, \textit{Explainable}, and \textit{Researching}), yielding 86 complete within-student blocks (86 instances per configuration; 344 instances total). All statistical comparisons retain the assigned configuration labels (intention-to-treat), including the single \textit{Rubric} instance that returned an input-guardrail refusal message and all 86 \textit{Researching} instances regardless of potential single-model fallback. Regarding question context, 280 instances (157 unique questions) used Mermaid flow-graph contexts (\texttt{Graph}) and 64 instances (33 unique questions across 13 repositories) used raw source-code contexts (\texttt{Raw}); 32 students encountered at least one \texttt{Raw} question, and 26 students across 12 repositories answered questions under both context types.
+
+\subsection{Statistical Analysis Methods}
+
+To account for clustering of observations within students, questions, and shared project repositories (where both students and questions are strictly nested within the 28 repositories), we conducted analyses in Python (\texttt{numpy}, \texttt{scipy}, \texttt{statsmodels})~\cite{seabold2010statsmodels,cameron2015cluster}:
+
+\paragraph{Scores, Composite Summaries, and Reliability Scope.}
+Direct agreement with the AI's evaluative judgment is measured by the single item \texttt{ACCEPTANCE}, while argument conviction (\texttt{PERSUASIVENESS}), learning motivation (\texttt{AFFECT}), revision readiness (\texttt{WILLINGNESS}), and future-use intention (\texttt{BEHAVIORAL INTENTION}) are treated as distinct outcomes. As a secondary exploratory summary, we define the \emph{AI Agreement Index} (AAI) as the unweighted mean across all 15 items (assigning equal weight $1/15$ to each item rather than weighting conceptual domains equally). We compute Cronbach's $\alpha$~\cite{cronbach1951coefficient} and McDonald's $\omega_t$ from a one-factor principal-axis solution~\cite{hayes2020use} on the pooled 344-row covariance matrix; because this pooled matrix mixes within- and between-student covariance and no confirmatory factor analysis was conducted, high $\alpha$ or $\omega_t$ values describe pooled score consistency and do \emph{not} validate the multidimensional construct groupings in Table~\ref{tab:instrument}.
+
+\paragraph{RQ1 (Item Distributions and Within-Student Regressions).}
+We report item means, standard deviations, and 95\% percentile confidence intervals from cluster-bootstrapping all 28 repositories with replacement ($5{,}000$ replicates, seed \texttt{20261029}). To examine contemporaneous within-student associations with three single-item outcomes—$y \in \{\texttt{ACCEPTANCE}, \texttt{WILLINGNESS}, \texttt{BEHAVIORAL INTENTION}\}$—we fitted student fixed-effects linear regressions by demeaning predictors and outcomes within each student $j$:
+\begin{equation}
+ y_{ij}-\bar y_j = \sum_{k=1}^{5}\beta_k(z_{kij}-\bar z_{kj}) + \sum_{c=2}^{4}\gamma_c(D_{cij}-\bar D_{cj}) + e_{ij},
+ \label{eq:drivers}
+\end{equation}
+where $i$ indexes feedback instances, $D_c$ are configuration indicators (\textit{Sandwich} reference), and the $m = 5$ predictors $z_{kij}$ are defined explicitly as: (1) \emph{Perceived Quality} (\texttt{PQ}: unweighted mean of \texttt{ACCURACY}, \texttt{SPECIFICITY}, \texttt{CLARITY}, and \texttt{TRANSPARENCY}, merging the \emph{Information \& Quality} and \emph{Explainability} rows of Table~\ref{tab:instrument}); (2) \emph{Perceived Utility} (\texttt{PU}: unweighted mean of \texttt{USEFULNESS} and \texttt{ACTIONABILITY}); (3) \emph{Trust \& Fairness} (\texttt{TR}: unweighted mean of \texttt{COMPETENCE TRUST}, \texttt{RELIABILITY}, and \texttt{FAIRNESS}); (4) \emph{Motivation} (single item \texttt{AFFECT}); and (5) \emph{Psychological Safety} (single item \texttt{PSYCHOLOGICAL SAFETY}, entered separately from \texttt{AFFECT} because their two-item consistency was low, $\alpha = 0.56$). Note that \texttt{PERSUASIVENESS} is not included as a predictor or outcome in Eq.~\ref{eq:drivers}. Each predictor was standardized by its full-sample SD prior to within-student demeaning, with 95\% CIs obtained via 5,000 repository-bootstrap resamples.
+
+\paragraph{RQ2 (Configuration Contrasts, Multiplicity, and CI-Inclusion Equivalence).}
+Primary configuration comparisons evaluate all six paired mean differences on \texttt{ACCEPTANCE} with 95\% repository-bootstrap percentile CIs (5,000 replicates, seed \texttt{20261029}). Exploratory Friedman tests~\cite{friedman1937use}, Kendall's $W$, and student-intercept mixed-effects models on AAI are reported as secondary summaries because they do not model repository-level clustering. Across the exploratory family of all 90 pairwise item-level contrasts ($6$ configuration pairs $\times$ $15$ items), we compute approximate simultaneous 95\% sensitivity bands using the 95th percentile of the maximum absolute bootstrap-standardized centered difference across 5,000 common repository resamples (seed \texttt{20261030}). For the secondary 15-item AAI composite, equivalence was assessed via the confidence-interval inclusion procedure~\cite{lakens2017equivalence}: specifically, our script checked whether each paired difference's 90\% repository-bootstrap percentile CI fell completely inside the exploratory bounds of $\pm 0.25$, alongside sensitivity checks at $\pm 0.20$ and $\pm 0.10$.
+
+\paragraph{RQ3 (Observational Context-Type Association).}
+Because the complexity router ($\tau = 10$) deterministically assigns \texttt{Raw} versus \texttt{Graph} context based on method node count $N_w$, context representation is confounded with business-function complexity. We fitted exploratory student fixed-effects regressions of \texttt{ACCEPTANCE} and 15-item AAI on a \texttt{Raw}-context indicator and configuration indicators, estimating 95\% percentile CIs from 5,000 repository-level multinomial bootstrap draws (seed \texttt{20261030}) and evaluating single-cluster sensitivity via leave-one-repository-out deletion.
+
+% -------------------------------------------------------------------------
+\section{Results}
+\label{sec:results}
+
+\subsection{Reliability and Data Quality}
+\label{sec:quality}
+
+Across the pooled 344 rating instances, the 15 items yielded Cronbach's $\alpha = 0.916$ and one-factor McDonald's $\omega_t = 0.930$. Pooled internal consistency estimates for the regression predictor groupings were $\alpha = 0.91$ for the four-item \emph{Perceived Quality} composite (\texttt{ACCURACY}, \texttt{SPECIFICITY}, \texttt{CLARITY}, \texttt{TRANSPARENCY}), $0.78$ for the two-item \emph{Perceived Utility} composite (\texttt{USEFULNESS}, \texttt{ACTIONABILITY}), $0.80$ for the three-item \emph{Trust \& Fairness} composite (\texttt{COMPETENCE TRUST}, \texttt{RELIABILITY}, \texttt{FAIRNESS}), and $0.78$ across the three outcome items (\texttt{ACCEPTANCE}, \texttt{WILLINGNESS}, \texttt{BEHAVIORAL INTENTION}). The two-item \emph{Affect \& Safety} pair (\texttt{AFFECT} and \texttt{PSYCHOLOGICAL SAFETY}) showed low consistency ($\alpha = 0.56$), supporting their treatment as separate single-item predictors in Eq.~\ref{eq:drivers}. Because these statistics are computed on pooled repeated-instance observations without confirmatory factor modeling, high $\alpha$ and $\omega_t$ values do not establish unidimensionality, validate the six-domain conceptual structure in Table~\ref{tab:instrument}, or measure within-student reliability.
+
+To examine response-pattern anomalies, we identified 64 instances (18.6\%) exhibiting straight-lining (identical ratings across all 15 items), including 11 students (12.8\%) who straight-lined all four feedback instances. Excluding flagged rows yielded a pooled estimate of $\alpha = 0.90$. However, straight-lining is a descriptive response-pattern flag rather than proof of inattention, and excluding flagged rows does not establish psychometric validity or justify independent-observation inference~\cite{kim2019straightlining,vansonderen2013ineffectiveness}.
+
+\subsection{RQ1: Item Ratings and Associations with Acceptance}
+
+\begin{table}[t]
+\caption{Item ratings across 344 feedback instances. CI: 95\% repository-bootstrap confidence interval for the mean (28 repositories). Agree/Disagree: percentage of ratings $\ge 4$ / $\le 2$.}
+\label{tab:rq1}
+\centering\scriptsize
+\renewcommand{\arraystretch}{0.86}
+\setlength{\aboverulesep}{1pt}
+\setlength{\belowrulesep}{1.2pt}
+\setlength\tabcolsep{4pt}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+Item Code & Mean (SD) & 95\% CI & Agree (\%) & Disagree (\%) \\
+\midrule
+\texttt{ACCURACY} & 4.38 (0.96) & [4.14, 4.61] & 83.4 & 5.5 \\
+\texttt{SPECIFICITY} & 4.36 (0.94) & [4.10, 4.60] & 83.4 & 5.2 \\
+\texttt{CLARITY} & 4.33 (0.88) & [4.09, 4.56] & 81.7 & 3.5 \\
+\texttt{TRANSPARENCY} & 4.29 (0.95) & [4.03, 4.54] & 79.9 & 4.9 \\
+\texttt{USEFULNESS} & 4.09 (0.77) & [3.93, 4.24] & 84.0 & 2.9 \\
+\texttt{ACTIONABILITY} & 4.13 (0.88) & [3.90, 4.34] & 80.8 & 4.9 \\
+\texttt{COMPETENCE TRUST} & 4.17 (0.98) & [3.94, 4.41] & 76.5 & 4.9 \\
+\texttt{RELIABILITY} & 3.88 (0.80) & [3.73, 4.01] & 78.5 & 4.9 \\
+\texttt{FAIRNESS} & 4.15 (0.79) & [3.98, 4.31] & 81.4 & 2.3 \\
+\texttt{AFFECT} & 3.53 (0.87) & [3.38, 3.71] & 41.9 & 4.9 \\
+\texttt{PSYCHOLOGICAL SAFETY} & 3.83 (0.85) & [3.65, 3.99] & 76.2 & 7.3 \\
+\texttt{ACCEPTANCE} & 4.09 (0.82) & [3.90, 4.27] & 79.9 & 3.5 \\
+\texttt{PERSUASIVENESS} & 2.87 (1.22) & [2.56, 3.20] & 30.8 & 48.8 \\
+\texttt{WILLINGNESS} & 3.97 (0.69) & [3.86, 4.08] & 81.4 & 2.3 \\
+\texttt{BEHAVIORAL INTENTION} & 3.80 (0.85) & [3.65, 3.94] & 68.0 & 5.2 \\
+\bottomrule
+\end{tabular}
+\vspace{-2mm}
+\end{table}
+
+Table~\ref{tab:rq1} and Figure~\ref{fig:likert} summarize item ratings across all 344 feedback instances. The exploratory 15-item unweighted composite, the AI Agreement Index (AAI), averaged $3.99$ (SD $0.60$, 95\% repository-bootstrap CI $[3.85, 4.13]$). Fourteen of the fifteen items had mean ratings above the neutral midpoint ($3.0$) and explicit disagreement (ratings $\le 2$) at or below $7.3\%$, with the highest agreement rates observed for perceived usefulness ($84.0\%$), accuracy ($83.4\%$), specificity ($83.4\%$), fairness ($81.4\%$), and willingness to revise ($81.4\%$). By contrast, \texttt{PERSUASIVENESS} had a mean below the neutral midpoint at $2.87$ (SD $1.22$, 95\% CI $[2.56, 3.20]$), with $30.8\%$ agreement and $48.8\%$ disagreement.
+
+\begin{figure}[H]
+\centering
+\vspace{-2mm}
+\includegraphics[width=0.74\textwidth]{figures/likert_items.pdf}
+\Description{Diverging stacked bar chart of the fifteen items, sorted by percentage of agreement from Usefulness (84 percent) at the top to Affect (42 percent) and Persuasiveness (30.8 percent, displayed as 31 percent) at the bottom. Disagreement segments to the left of zero are short for all items except Persuasiveness (48.8 percent disagree); Affect has a large neutral segment.}
+\caption{Distribution of ratings per item, sorted by the share of agreement (right-hand labels). Neutral ratings are centred on zero.}
+\label{fig:likert}
+\vspace{-3mm}
+\end{figure}
+
+Crucially, direct agreement with the AI's judgment of strengths and weaknesses (\texttt{ACCEPTANCE}: $79.9\%$ agree, $3.5\%$ disagree) was substantially higher than the share of instances in which students found the AI's arguments and evidence convincing (\texttt{PERSUASIVENESS}: $30.8\%$ agree, $48.8\%$ disagree); we do not infer the underlying cause of this divergence from the survey data. Agreement with future-use intention (\texttt{BEHAVIORAL INTENTION}) was $68.0\%$, whereas learning motivation (\texttt{AFFECT}) received agreement in only $41.9\%$ of instances ($53.2\%$ neutral). Because these percentages summarize instance-level ratings rather than behavioral logs or post-tests, high judgment acceptance does not imply that students were deeply convinced by the AI's reasoning, felt motivated, or actually revised their answers.
+
+\paragraph{Within-Student Conditional Associations.}
+
+Table~\ref{tab:drivers} reports student fixed-effects regression coefficients (Eq.~\ref{eq:drivers}) with 95\% repository-bootstrap confidence intervals. \emph{Perceived Utility} (\texttt{USEFULNESS}, \texttt{ACTIONABILITY}) was positively associated with both \texttt{ACCEPTANCE} ($b = 0.36$, 95\% CI $[0.20, 0.51]$) and \texttt{BEHAVIORAL INTENTION} ($b = 0.21$, $[0.06, 0.35]$). \emph{Trust \& Fairness} (\texttt{COMPETENCE TRUST}, \texttt{RELIABILITY}, \texttt{FAIRNESS}) was positively associated with \texttt{ACCEPTANCE} ($b = 0.24$, $[0.09, 0.42]$), whereas the confidence intervals for the four-item \emph{Perceived Quality} predictor included zero across all three outcomes after adjusting for configuration indicators (without configuration adjustment, its \texttt{ACCEPTANCE} interval was $[0.02, 0.44]$). Single-item \emph{Motivation} (\texttt{AFFECT}) was positively associated with \texttt{WILLINGNESS} ($b = 0.27$, $[0.03, 0.46]$), while intervals for single-item \emph{Psychological Safety} included zero throughout. These fifteen exploratory intervals are unadjusted for multiplicity and reflect contemporaneous within-student associations rather than causal effects.
+
+\begin{table}[t]
+\caption{Student fixed-effects regressions (Eq.~\ref{eq:drivers}). Cells report outcome rating points per full-sample predictor SD [95\% repository-bootstrap CI], based on 5,000 bootstrap replicates. Configuration indicators are included; predictor compositions are defined in Section~\ref{sec:experiments}.}
+\label{tab:drivers}
+\centering\scriptsize
+\renewcommand{\arraystretch}{0.86}
+\setlength{\aboverulesep}{1pt}
+\setlength{\belowrulesep}{1.2pt}
+\setlength\tabcolsep{2pt}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+Predictor (Constituent Items) & \shortstack{Acceptance\\(\texttt{ACCEPTANCE})} & \shortstack{Willingness\\(\texttt{WILLINGNESS})} & \shortstack{Behav.\ Intention\\(\texttt{BEHAV.\ INTENTION})} \\
+\midrule
+Perceived Quality (\texttt{ACC, SPE, CLA, TRA}) & $0.19$ [$-0.03, 0.41$] & $0.03$ [$-0.23, 0.32$] & $0.10$ [$-0.14, 0.36$] \\
+Perceived Utility (\texttt{USE, ACT}) & $0.36$ [$0.20, 0.51$] & $0.14$ [$-0.06, 0.25$] & $0.21$ [$0.06, 0.35$] \\
+Trust \& Fairness (\texttt{COM, REL, FAI}) & $0.24$ [$0.09, 0.42$] & $0.06$ [$-0.08, 0.22$] & $0.13$ [$-0.14, 0.40$] \\
+Motivation (\texttt{AFFECT}) & $-0.09$ [$-0.20, 0.03$] & $0.27$ [$0.03, 0.46$] & $-0.05$ [$-0.20, 0.10$] \\
+Psychological Safety (\texttt{PSY.\ SAFETY}) & $-0.05$ [$-0.12, 0.00$] & $-0.03$ [$-0.17, 0.07$] & $0.07$ [$-0.09, 0.25$] \\
+\bottomrule
+\end{tabular}
+\vspace{-2mm}
+\end{table}
+
+\subsection{RQ2: Differences Between Feedback Configurations}
+
+\begin{table}[t]
+\caption{All six paired feedback-configuration contrasts (intention-to-treat). Mean differences [95\% repository-bootstrap CI for Acceptance; 90\% CI for 15-item AAI CI-inclusion check], based on 5,000 bootstrap replicates. Positive values favor the first configuration.}
+\label{tab:rq2}
+\centering\scriptsize
+\renewcommand{\arraystretch}{0.86}
+\setlength{\aboverulesep}{1pt}
+\setlength{\belowrulesep}{1.2pt}
+\setlength\tabcolsep{3pt}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+Contrast & Acceptance: Difference [95\% CI] & AAI: Difference [90\% CI] \\
+\midrule
+Sandwich -- Rubric & 0.047 [-0.121, 0.185] & 0.112 [0.009, 0.205] \\
+Sandwich -- Explainable & -0.012 [-0.165, 0.122] & 0.050 [-0.032, 0.120] \\
+Sandwich -- Researching & -0.023 [-0.198, 0.136] & 0.024 [-0.068, 0.103] \\
+Rubric -- Explainable & -0.058 [-0.204, 0.084] & -0.061 [-0.121, -0.009] \\
+Rubric -- Researching & -0.070 [-0.274, 0.120] & -0.088 [-0.158, -0.022] \\
+Explainable -- Researching & -0.012 [-0.176, 0.153] & -0.026 [-0.071, 0.023] \\
+\bottomrule
+\end{tabular}
+\vspace{-2mm}
+\end{table}
+
+Table~\ref{tab:rq2} presents the six paired contrasts among the four assigned feedback configurations. All six 95\% repository-bootstrap confidence intervals for direct acceptance (\texttt{ACCEPTANCE}) included zero, providing no evidence of statistically significant pairwise differences in direct judgment agreement at the nominal 5\% level (without establishing equivalence on \texttt{ACCEPTANCE}). Mean scores on the secondary 15-item AAI composite ranged from $3.93$ (\textit{Rubric}) to $4.04$ (\textit{Sandwich}; \textit{Explainable}: $3.99$; \textit{Researching}: $4.01$). Secondary analyses that do not model repository clustering yielded $\chi^2(3) = 25.44$ ($p < .001$, Kendall's $W = .099$) on an exploratory Friedman test and $p = .071$ on an omnibus student-intercept mixed-effects model.
+
+At the item level, \textit{Sandwich} and \textit{Researching} received higher mean actionability ratings ($4.33$ and $4.28$, respectively) than \textit{Rubric} ($3.97$) and \textit{Explainable} ($3.95$). The \textit{Sandwich}--\textit{Explainable} contrast in actionability yielded a mean difference of $0.37$ points (unadjusted 95\% repository-bootstrap CI $[0.16, 0.57]$), with an approximate simultaneous 95\% sensitivity band of $[0.02, 0.72]$ across the post hoc family of all 90 pairwise item contrasts ($6$ format pairs $\times$ $15$ survey items). Leave-one-repository-out deletion across the 28 repositories yielded point estimates ranging from $0.34$ to $0.41$ with no sign reversals.
+
+In the confidence-interval inclusion check on the secondary 15-item AAI composite~\cite{lakens2017equivalence}, all six paired 90\% repository-bootstrap percentile intervals lay entirely inside the exploratory $\pm 0.25$ margin (Table~\ref{tab:rq2}; the widest bound was $[0.009, 0.205]$ for \textit{Sandwich}--\textit{Rubric}). Sensitivity checks showed that 5 of 6 intervals fell inside $\pm 0.20$ (\textit{Sandwich}--\textit{Rubric} upper bound $0.205 > 0.20$) and 1 of 6 fell inside $\pm 0.10$ (\textit{Explainable}--\textit{Researching}, $[-0.071, 0.023]$). Thus, small average composite differences coexisted with item-level divergence in actionability. Student-level intraclass correlation on AAI was $\text{ICC} = .77$, indicating that between-student baseline differences accounted for a substantial share of rating variance.
+
+\ifrqthree
+\subsection{RQ3: Raw-Code versus Graph-Based Questions}
+
+Mean acceptance ratings were $4.20$ for raw-code questions ($n=64$) and $4.06$ for graph-based questions ($n=280$). After adjusting for student fixed effects and feedback-configuration indicators, the estimated coefficient for raw-code context on \texttt{ACCEPTANCE} was $b = 0.034$ (95\% repository-bootstrap CI $[-0.180, 0.257]$), and on the secondary 15-item AAI composite was $b = 0.074$ (95\% CI $[-0.020, 0.190]$; Table~\ref{tab:rq3}). Within-student context variation came from 26 students across 12 repositories. Because context representation was deterministically coupled to call-graph node count ($N_w \le 10$ vs.\ $N_w > 10$), these observational estimates remain confounded with business-function complexity.
+
+\begin{table}[t]
+\caption{RQ3 outcomes by context type. Descriptive means are reported, while $b_\text{raw}$ adjusts for student fixed effects and feedback configuration. CIs are based on 5,000 repository-level bootstrap replicates.}
+\label{tab:rq3}
+\centering\scriptsize
+\renewcommand{\arraystretch}{0.86}
+\setlength{\aboverulesep}{1pt}
+\setlength{\belowrulesep}{1.2pt}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+Outcome Metric & Graph Context ($n=280$) & Raw Code Context ($n=64$) & $b_\text{raw}$ [95\% CI] \\
+\midrule
+Acceptance (\texttt{ACCEPTANCE}) & 4.06 & 4.20 & 0.034 [$-0.180, 0.257$] \\
+AAI (Secondary 15-Item Composite) & 3.98 & 4.04 & 0.074 [$-0.020, 0.190$] \\
+\bottomrule
+\end{tabular}
+\vspace{-2mm}
+\end{table}
+\fi
+
+% -------------------------------------------------------------------------
+\section{Discussion}
+\label{sec:discussion}
+
+\paragraph{Judgment Acceptance versus Argument Persuasiveness, Motivation, and Revision.}
+A central finding of this study is the pronounced divergence between agreeing with the AI's evaluative verdict and being convinced by its underlying argumentation. While students agreed with the AI's assessment of strengths and weaknesses in $79.9\%$ of instances (\texttt{ACCEPTANCE}, mean $4.09$) and rated usefulness ($84.0\%$) and accuracy ($83.4\%$) highly, only $30.8\%$ of instances endorsed the persuasiveness of the AI's arguments and evidence (\texttt{PERSUASIVENESS}, mean $2.87$, with $48.8\%$ disagreeing), and only $41.9\%$ reported learning motivation (\texttt{AFFECT}, $53.2\%$ neutral) alongside $68.0\%$ for future-use intention (\texttt{BEHAVIORAL INTENTION}). Accepting a diagnostic summary therefore cannot be equated with finding the explanation persuasive or developing deep, calibrated trust in the system~\cite{lee2004trust}. We do not infer the specific causal mechanism for this gap—which could involve explanation depth, reference-context granularity, or response habits—from the current survey data. Furthermore, although within-student regressions showed positive contemporaneous associations between perceived utility/trust and acceptance, and between motivation and self-reported willingness to revise~\cite{davis1989perceived,venkatesh2003user}, self-reported ratings do not demonstrate that students actually revised their answers or code, or that they achieved objective learning gains.
+
+\paragraph{Assigned Configuration Bundles, Fallback Provenance, and Pedagogical Design.}
+Across the four assigned configurations, all six 95\% confidence intervals for direct acceptance included zero, and all six 90\% intervals for the 15-item AAI fell within $\pm 0.25$ (5/6 within $\pm 0.20$), whereas exploratory item-level comparisons showed higher actionability ratings for \textit{Sandwich} ($4.33$) and \textit{Researching} ($4.28$) than for \textit{Rubric} ($3.97$) and \textit{Explainable} ($3.95$; \textit{Sandwich}--\textit{Explainable} difference $0.37$, simultaneous 95\% band $[0.02, 0.72]$). Because the four configurations bundle prompt structure, explicit next-step requirements, rubric scoring, response length, and intended model orchestration, this comparison evaluates complete deployed packages rather than isolating the causal effect of next steps or multi-model synthesis. Moreover, because the \textit{Researching} implementation falls back to single-model DeepSeek evaluation using the \textit{Researching} JSON schema whenever the Stage~2 Groq call fails—and that fallback schema still writes both model names to \texttt{models\_involved}—our results compare the \emph{assigned} \textit{Researching} configuration rather than verified two-model execution on every instance, and revealed no AAI advantage over single-model \textit{Sandwich}. Future factorial experiments with immutable provider telemetry are needed to isolate individual feedback components and evaluate token/latency costs.
+
+\paragraph{Response Patterns and Measurement Limitations.}
+Straight-lining occurred in 18.6\% of rating instances (12.8\% of students across all four instances) as each student completed 60 Likert ratings consecutively after batch answer submission. While unidirectional keying avoids reverse-wording confusion~\cite{vansonderen2013ineffectiveness}, it can facilitate uniform responding under fatigue~\cite{kim2019straightlining}, and neither pooled reliability ($\alpha = 0.916$, $\omega_t = 0.930$) nor straight-lining exclusions validate the instrument's factor structure.
+
+\subsection{Threats to Validity}
+\label{sec:threats}
+
+\textbf{Internal validity:} Each configuration evaluated a different student answer to a different business-function question; although configurations were randomly permuted across each student's four submitted answers, question difficulty, submission-order navigation, and carryover effects cannot be ruled out. Bundle comparisons cannot isolate individual pedagogical features or model effects; for RQ3, the complexity router ($\tau = 10$) confounds business-function complexity with context representation. Exported database records verify assigned configurations, but do not provide provider-side execution logs to distinguish two-stage \textit{Researching} runs from single-model fallbacks, nor dwell-time logs to verify reading completeness. \textbf{Construct validity:} The 15-item instrument was not factor-analytically validated; high pooled $\alpha$ and $\omega_t$ mix within- and between-student covariance and do not confirm the six-construct grouping in Table~\ref{tab:instrument}. The secondary AAI averages all 15 items with equal item weight ($1/15$) rather than weighting conceptual domains equally. Self-reports capture perceived quality and agreement rather than expert-verified technical correctness, observed code revisions, or learning gains, and concurrent ratings risk common-method variance~\cite{podsakoff2003common}. \textbf{External validity:} Data came from voluntary, self-selected participation during viva preparation at a single institution (FPT University) without a logged class sampling frame or response rate, limiting generalizability to mandatory grading, introductory courses, or other codebases. \textbf{Statistical conclusion validity:} With 28 repository clusters, percentile-bootstrap coverage is approximate; Friedman and student-intercept mixed models omit repository clustering; within-student regressions estimate contemporaneous associations across 15 unadjusted intervals; and the uncalibrated $\pm 0.25$ AAI CI-inclusion check does not establish item-level or educational equivalence.
+
+% -------------------------------------------------------------------------
+\section{Conclusion}
+\label{sec:conclusion}
+
+PACE connects multi-language repository static analysis, complexity-aware context routing, rule-based input/output validation, and four formative feedback configurations in a capstone viva preparation workflow. In a within-subject field study of 344 rated feedback instances from 86 students across 28 team repositories, students frequently agreed with the AI's evaluative judgment (\texttt{ACCEPTANCE}: $79.9\%$) and endorsed its usefulness ($84.0\%$) and accuracy ($83.4\%$), yet far fewer instances found the AI's arguments and evidence persuasive (\texttt{PERSUASIVENESS}: $30.8\%$ agree vs.\ $48.8\%$ disagree) or reported learning motivation (\texttt{AFFECT}: $41.9\%$) and future-use intention ($68.0\%$). These results underscore a critical distinction between agreeing with an AI's diagnostic verdict and finding its reasoning persuasive; we do not infer the underlying cause of this divergence, nor do we infer that students developed deep trust, learned more effectively, or actually revised their answers or code. Across the four assigned configurations, all six 95\% repository-bootstrap intervals for direct acceptance included zero, while exploratory 15-item AAI 90\% intervals lay within $\pm 0.25$ and item-level profiles indicated higher perceived actionability for configurations requiring explicit next steps (\textit{Sandwich} and \textit{Researching}).
+
+This study contributes an empirical field evaluation of how software engineering students perceive deployed multi-format AI feedback bundles on explanations of their own team repositories. Future work should factorially manipulate individual feedback components, validate instrument psychometrics, audit feedback accuracy against independent expert ratings, track actual revision behavior and learning outcomes, and log immutable provider-level execution telemetry.
+
+\begin{credits}
+\subsubsection{\ackname}
+We thank the participating software engineering students, capstone instructors, and course mentors at FPT University for their support.
+
+\subsubsection{\discintname}
+The authors have no competing interests to declare that are relevant to the content of this article.
+
+\subsubsection{Research Ethics and Data Governance}
+Before participation, the research team explained the study purpose and the intended research use of survey responses to students in class in the presence of the course instructor. Participation and data contribution were voluntary, and students were explicitly assured that declining would carry no academic, grading, or administrative disadvantage; however, individual signed consent forms, class sampling frames, and invitation counts were not separately recorded. Classroom access and repository registration were coordinated with course instructors and capstone mentors. Team project repositories were cloned for static analysis and LLM prompt construction using repository links submitted within the course workflow, without separate written third-party cloud LLM data-processing agreements. Personal email addresses, student identifiers, raw repository source code, and individual free-text responses are excluded from shared research artifacts, with any authorized institutional verification restricted to controlled access. These statements document the author-confirmed classroom procedure; no formal institutional review board (IRB) approval number or formal ethics exemption determination is claimed.
+\end{credits}
+
+\bibliographystyle{splncs04}
+\bibliography{references}
+
+\end{document}
+

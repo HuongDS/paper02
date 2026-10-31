@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (MiKTeX 26.5) (preloaded format=pdflatex 2026.9.12)  31 OCT 2026 18:07
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (MiKTeX 26.5) (preloaded format=pdflatex 2026.9.12)  31 OCT 2026 18:36
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1193,6 +1193,38 @@ LaTeX Font Info:    Font shape `T1/ntxtlf/b/n' will be
 (Font)              scaled to size 9.0pt on input line 100.
 LaTeX Font Info:    Font shape `T1/ntxtlf/m/it' will be
 (Font)              scaled to size 9.0pt on input line 101.
+LaTeX Font Info:    Font shape `OT1/minntx/m/n' will be
+(Font)              scaled to size 9.0pt on input line 101.
+LaTeX Font Info:    Font shape `OT1/minntx/m/n' will be
+(Font)              scaled to size 6.6pt on input line 101.
+LaTeX Font Info:    Font shape `OML/ntxmi/m/it' will be
+(Font)              scaled to size 9.0pt on input line 101.
+LaTeX Font Info:    Font shape `OML/ntxmi/m/it' will be
+(Font)              scaled to size 6.6pt on input line 101.
+LaTeX Font Info:    Font shape `LMS/ntxsy/m/n' will be
+(Font)              scaled to size 9.0pt on input line 101.
+LaTeX Font Info:    Font shape `LMS/ntxsy/m/n' will be
+(Font)              scaled to size 6.6pt on input line 101.
+LaTeX Font Info:    Font shape `LMX/ntxexx/m/n' will be
+(Font)              scaled to size 9.0pt on input line 101.
+LaTeX Font Info:    Font shape `LMX/ntxexx/m/n' will be
+(Font)              scaled to size 6.6pt on input line 101.
+LaTeX Font Info:    Font shape `U/ntxmia/m/it' will be
+(Font)              scaled to size 9.0pt on input line 101.
+LaTeX Font Info:    Font shape `U/ntxmia/m/it' will be
+(Font)              scaled to size 6.6pt on input line 101.
+LaTeX Font Info:    Font shape `U/ntxsym/m/n' will be
+(Font)              scaled to size 9.0pt on input line 101.
+LaTeX Font Info:    Font shape `U/ntxsym/m/n' will be
+(Font)              scaled to size 6.6pt on input line 101.
+LaTeX Font Info:    Font shape `U/ntxsyc/m/n' will be
+(Font)              scaled to size 9.0pt on input line 101.
+LaTeX Font Info:    Font shape `U/ntxsyc/m/n' will be
+(Font)              scaled to size 6.6pt on input line 101.
+LaTeX Font Info:    Font shape `U/ntxexa/m/n' will be
+(Font)              scaled to size 9.0pt on input line 101.
+LaTeX Font Info:    Font shape `U/ntxexa/m/n' will be
+(Font)              scaled to size 6.6pt on input line 101.
 LaTeX Font Info:    Trying to load font information for TS1+ntxtlf on input lin
 e 103.
 
@@ -1205,22 +1237,19 @@ LaTeX Font Info:    Font shape `T1/ntxtlf/m/n' will be
 (Font)              scaled to size 12.0pt on input line 110.
 LaTeX Font Info:    Font shape `T1/ntxtlf/b/n' will be
 (Font)              scaled to size 12.0pt on input line 110.
-LaTeX Font Info:    Font shape `T1/ntxtlf/b/n' will be
-(Font)              scaled to size 10.0pt on input line 115.
-LaTeX Font Info:    Font shape `T1/ntxtlf/m/it' will be
-(Font)              scaled to size 10.0pt on input line 115.
  [1
 
 {C:/Users/ASUS/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}{D:/TaiLieu_FA2
 6/paper_tools/miktex/fonts/enc/dvips/newtx/ntx-ec-tlf.enc}{D:/TaiLieu_FA26/pape
-r_tools/miktex/fonts/enc/dvips/tex-gyre/q-ts1.enc}]
+r_tools/miktex/fonts/enc/dvips/newtx/ntx-ot1-tlf.enc}{D:/TaiLieu_FA26/paper_too
+ls/miktex/fonts/enc/dvips/tex-gyre/q-ts1.enc}]
+LaTeX Font Info:    Font shape `T1/ntxtlf/b/n' will be
+(Font)              scaled to size 10.0pt on input line 115.
+LaTeX Font Info:    Font shape `T1/ntxtlf/m/it' will be
+(Font)              scaled to size 10.0pt on input line 115.
 LaTeX Font Info:    Font shape `T1/ntxtt/m/n' will be
 (Font)              scaled to size 10.0pt on input line 117.
-
-Underfull \vbox (badness 2261) has occurred while \output is active []
-
- [2{D:/TaiLieu_FA26/paper_tools/miktex/fonts/enc/dvips/newtx/ntx-ot1-tlf.enc}] 
-[3]
+ [2] [3]
 LaTeX Font Info:    Font shape `T1/ntxtlf/m/n' will be
 (Font)              scaled to size 7.0pt on input line 166.
  [4]
@@ -1228,70 +1257,66 @@ LaTeX Font Info:    Font shape `T1/ntxtlf/m/n' will be
 (Font)              scaled to size 7.3pt on input line 203.
 LaTeX Font Info:    Font shape `T1/ntxtlf/m/n' will be
 (Font)              scaled to size 5.5pt on input line 203.
+ [5]
+Overfull \hbox (3.85095pt too wide) in paragraph at lines 205--206
+[]\T1/ntxtlf/b/n/10 (-20) Sandwich \T1/ntxtlf/m/n/10 (-20) re-quires keys \T1/n
+txtt/m/n/10 feedback_type\T1/ntxtlf/m/n/10 (-20) , \T1/ntxtt/m/n/10 positives\T
+1/ntxtlf/m/n/10 (-20) , \T1/ntxtt/m/n/10 constructive_criticism\T1/ntxtlf/m/n/1
+0 (-20) ,
+ []
 
-[5]
-Overfull \vbox (2.24002pt too high) detected at line 235
+
+Overfull \hbox (8.7576pt too wide) in paragraph at lines 210--211
+\T1/ntxtt/m/n/10 (Pedagogical Synthesizer) \T1/ntxtlf/m/n/10 (-20) in-side \T1/
+ntxtt/m/n/10 models_involved\T1/ntxtlf/m/n/10 (-20) , all 86 ex-ported \T1/ntxt
+t/m/n/10 Researching
+ []
+
+[6]
+Overfull \vbox (2.24002pt too high) detected at line 239
  []
 
 LaTeX Font Info:    Font shape `T1/ntxtt/m/n' will be
-(Font)              scaled to size 7.0pt on input line 236.
+(Font)              scaled to size 7.0pt on input line 240.
 
-Overfull \vbox (2.24002pt too high) detected at line 243
+Overfull \vbox (2.24002pt too high) detected at line 247
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 254--254
+Underfull \hbox (badness 10000) in paragraph at lines 258--258
 []|\T1/ntxtt/m/n/7 PSYCHOLOGICAL
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 260--260
+Underfull \hbox (badness 10000) in paragraph at lines 264--264
 []|\T1/ntxtt/m/n/7 BEHAVIORAL
  []
 
-[6] [7]
-LaTeX Font Info:    Font shape `OT1/minntx/m/n' will be
-(Font)              scaled to size 9.0pt on input line 307.
-LaTeX Font Info:    Font shape `OT1/minntx/m/n' will be
-(Font)              scaled to size 6.6pt on input line 307.
-LaTeX Font Info:    Font shape `OML/ntxmi/m/it' will be
-(Font)              scaled to size 9.0pt on input line 307.
-LaTeX Font Info:    Font shape `OML/ntxmi/m/it' will be
-(Font)              scaled to size 6.6pt on input line 307.
-LaTeX Font Info:    Font shape `LMS/ntxsy/m/n' will be
-(Font)              scaled to size 9.0pt on input line 307.
-LaTeX Font Info:    Font shape `LMS/ntxsy/m/n' will be
-(Font)              scaled to size 6.6pt on input line 307.
-LaTeX Font Info:    Font shape `LMX/ntxexx/m/n' will be
-(Font)              scaled to size 9.0pt on input line 307.
-LaTeX Font Info:    Font shape `LMX/ntxexx/m/n' will be
-(Font)              scaled to size 6.6pt on input line 307.
-LaTeX Font Info:    Font shape `U/ntxmia/m/it' will be
-(Font)              scaled to size 9.0pt on input line 307.
-LaTeX Font Info:    Font shape `U/ntxmia/m/it' will be
-(Font)              scaled to size 6.6pt on input line 307.
-LaTeX Font Info:    Font shape `U/ntxsym/m/n' will be
-(Font)              scaled to size 9.0pt on input line 307.
-LaTeX Font Info:    Font shape `U/ntxsym/m/n' will be
-(Font)              scaled to size 6.6pt on input line 307.
-LaTeX Font Info:    Font shape `U/ntxsyc/m/n' will be
-(Font)              scaled to size 9.0pt on input line 307.
-LaTeX Font Info:    Font shape `U/ntxsyc/m/n' will be
-(Font)              scaled to size 6.6pt on input line 307.
-LaTeX Font Info:    Font shape `U/ntxexa/m/n' will be
-(Font)              scaled to size 9.0pt on input line 307.
-LaTeX Font Info:    Font shape `U/ntxexa/m/n' will be
-(Font)              scaled to size 6.6pt on input line 307.
-<figures/likert_items.pdf, id=257, 343.81198pt x 244.10323pt>
+
+Underfull \vbox (badness 1077) has occurred while \output is active []
+
+ [7]
+[8]
+Overfull \hbox (7.67014pt too wide) in paragraph at lines 282--283
+\LMS/ntxsy/m/n/10 f[]\OML/ntxmi/m/it/10 ; []; []\LMS/ntxsy/m/n/10 g$\T1/ntxtlf/
+m/n/10 (-20) ^^Vwe fit-ted stu-dent fixed-effects
+ []
+
+[9]
+<figures/likert_items.pdf, id=278, 343.81198pt x 244.10323pt>
 File: figures/likert_items.pdf Graphic file (type pdf)
 <use figures/likert_items.pdf>
-Package pdftex.def Info: figures/likert_items.pdf  used on input line 343.
+Package pdftex.def Info: figures/likert_items.pdf  used on input line 345.
 (pdftex.def)             Requested size: 256.87332pt x 182.3916pt.
- [8] [9 <./figures/likert_items.pdf>] [10]
+
+Underfull \vbox (badness 1571) has occurred while \output is active []
+
+ [10]
+[11 <./figures/likert_items.pdf>] [12]
 LaTeX Font Info:    Font shape `T1/ntxtlf/m/n' will be
-(Font)              scaled to size 6.6pt on input line 415.
- [11] [12] (main.bbl [13]
-[14] [15]) [16] (main.aux)
+(Font)              scaled to size 6.6pt on input line 417.
+ [13] [14] [15] (main.bbl [16] [17])
+[18] (main.aux)
  ***********
 LaTeX2e <2026-06-01>
 L3 programming layer <2020/03/25>
@@ -1300,13 +1325,13 @@ Package rerunfilecheck Info: File `main.out' has not changed.
 (rerunfilecheck)             Checksum: C7B3B624B0051ABFECF285F6DFCFB23F;788.
  ) 
 Here is how much of TeX's memory you used:
- 27834 strings out of 467441
- 502648 string characters out of 5412424
- 914442 words of memory out of 5000000
- 56306 multiletter control sequences out of 15000+600000
- 710457 words of font info for 248 fonts, out of 8000000 for 9000
+ 27855 strings out of 467441
+ 503033 string characters out of 5412424
+ 914617 words of memory out of 5000000
+ 56311 multiletter control sequences out of 15000+600000
+ 711829 words of font info for 256 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 92i,11n,94p,1545b,936s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 92i,11n,94p,2076b,936s stack positions out of 10000i,1000n,20000p,200000b,200000s
  <C:\Users\ASUS\AppData\Local\MiKTeX\fonts/pk/ljfour/public/bbding/dpi600\bbd
 ing10.pk><D:/TaiLieu_FA26/paper_tools/miktex/fonts/type1/public/newtx/NewTXMI.p
 fb><D:/TaiLieu_FA26/paper_tools/miktex/fonts/type1/public/newtx/NewTXMI7.pfb><D
@@ -1318,9 +1343,9 @@ miktex/fonts/type1/public/newtx/txsys.pfb><D:/TaiLieu_FA26/paper_tools/miktex/f
 onts/type1/public/newtx/ztmb.pfb><D:/TaiLieu_FA26/paper_tools/miktex/fonts/type
 1/public/newtx/ztmr.pfb><D:/TaiLieu_FA26/paper_tools/miktex/fonts/type1/public/
 newtx/ztmri.pfb>
-Output written on main.pdf (16 pages, 333361 bytes).
+Output written on main.pdf (18 pages, 355802 bytes).
 PDF statistics:
- 498 PDF objects out of 1000 (max. 8388607)
- 97 named destinations out of 1000 (max. 500000)
- 34842 words of extra memory for PDF output out of 35830 (max. 10000000)
+ 526 PDF objects out of 1000 (max. 8388607)
+ 101 named destinations out of 1000 (max. 500000)
+ 35866 words of extra memory for PDF output out of 42996 (max. 10000000)
 
