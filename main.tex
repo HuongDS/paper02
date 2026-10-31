@@ -1,0 +1,269 @@
+% =========================================================================
+% Main LaTeX Document for Springer Computer Science Proceedings (LNCS)
+% Formatted strictly according to Springer Author Guidelines (reference.pdf)
+% =========================================================================
+
+\documentclass{llncs}
+
+% -------------------------------------------------------------------------
+% 1. Character Encoding & Fonts
+% -------------------------------------------------------------------------
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+
+% Springer LNCS recommended font settings (Times Roman based)
+\usepackage{newtxtext}
+\usepackage[varvw]{newtxmath}
+
+% -------------------------------------------------------------------------
+% 2. Figures & Graphics
+% -------------------------------------------------------------------------
+\usepackage{graphicx}
+% Set search path for graphic files (e.g., pdf, eps, png)
+\graphicspath{{./figures/}{./}}
+
+% -------------------------------------------------------------------------
+% 3. Tables & Formatting
+% -------------------------------------------------------------------------
+\usepackage{booktabs}       % High-quality academic tables (avoid vertical lines)
+\usepackage{multirow}       % Multirow cells in tables
+\usepackage{array}          % Advanced column configurations
+
+% -------------------------------------------------------------------------
+% 4. Microtypography & Symbols
+% -------------------------------------------------------------------------
+\usepackage{microtype}      % Improves spacing and reduces overfull hboxes
+\usepackage{bbding}         % Provides \Envelope for corresponding author marking
+
+% -------------------------------------------------------------------------
+% 5. Hyperlinks & URLs (Springer eBook style)
+% -------------------------------------------------------------------------
+\usepackage{xcolor}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    citecolor=blue,
+    urlcolor=blue,
+    pdfstartview={FitH}
+}
+% Springer guidelines: URLs displayed in blue roman font
+\renewcommand\UrlFont{\color{blue}\rmfamily}
+\urlstyle{rm}
+
+% =========================================================================
+% Front Matter
+% =========================================================================
+\begin{document}
+
+% --- Title ---
+% Guideline: Capitalize nouns, verbs, and all other words except articles,
+% prepositions, and conjunctions (Title Case).
+\title{Do Students Agree with LLM Feedback on Their Own Code? A Within-Subject Study of Four Feedback Configurations in Software Project Courses}
+
+% Running heads are disabled (uncomment if required later for camera-ready):
+%\titlerunning{Do Students Agree with LLM Feedback on Their Own Code?}
+
+% --- Authors ---
+% Guideline:
+% - Full given name before surname.
+% - Mark the corresponding author with (\Envelope).
+\author{
+    Phuc Sanh Nguyen \and
+    Song Huong Dang \and
+    Quang Hieu Le \and
+    Viet Bao Nguyen \and
+    \mbox{Phuc Thinh Do(\Envelope)}
+}
+
+%\authorrunning{P. S. Nguyen et al.}
+
+% --- Affiliation & Emails ---
+\institute{
+    FPT University, Ho Chi Minh City, Vietnam\\
+    \email{npsdn1906@gmail.com, dangsonghuong010405@gmail.com,\\
+    lequanghieu2504@gmail.com, babluokei4@gmail.com, ThinhDP2@fe.edu.vn}
+}
+
+\maketitle % Typeset title, authors, affiliations
+
+% =========================================================================
+% Abstract & Keywords
+% =========================================================================
+\begin{abstract}
+Oral defense (viva) in software engineering capstone projects is essential for verifying students' comprehension of business logic and codebase architecture, yet manual grading is labor-intensive and inconsistent, whereas off-the-shelf large language models (LLMs) risk code-context hallucinations, prompt injection, and sycophancy. This paper presents the pedagogical evaluation engine of \textbf{PACE}, an AI-assisted viva system integrating complexity-aware hybrid ground-truth extraction (routing raw code versus Mermaid control/data-flow graphs at node threshold $\tau = 10$) with three-layer guardrails and XML-based delimiter sandboxing. To mitigate single-model sycophancy, we propose a role-decoupled \textbf{Multi-LLM Ensemble} (\textit{Researching} mode) chaining \textbf{DeepSeek-V3} (\textit{Code Inspector}) with \textbf{Groq (\texttt{openai/gpt-oss-120b})} (\textit{Pedagogical Synthesizer and Rubric Grader}), evaluated alongside three single-LLM formative paradigms (\textit{Sandwich}, \textit{Rubric}, and \textit{Explainable}). In a randomized, blinded, within-subject experiment at FPT University, 86 students across 28 repositories submitted 344 scenario-based viva responses rated on a nine-dimension, five-point Likert instrument adapted from the Feedback Perceptions Questionnaire (FPQ) and formative assessment frameworks. Across 344 instances, ratings endorsed AI judgment (79.9\%), future use (68.0\%), and motivation (41.9\%), with a multidomain composite mean of 4.07/5 (95\% CI [3.90, 4.23]). All six 95\% repository-bootstrap contrasts on direct Acceptance included zero without establishing equivalence, and observational raw-versus-graph Acceptance remained inconclusive ($b = 0.03$, 95\% CI [$-0.18$, 0.26]). Exploratory \textit{Sandwich}--\textit{Explainable} actionability differed by 0.37 points (simultaneous 95\% sensitivity band [0.02, 0.72] across 90 contrasts) without isolating next-step effects. These findings concern reported perceptions rather than expert-verified correctness, observed revision, or learning gains.
+
+\keywords{Automated Oral Assessment \and Multi-LLM Ensemble \and Formative Feedback \and Pedagogical AI Guardrails \and Software Engineering Education.}
+\end{abstract}
+
+% =========================================================================
+% Main Content
+% =========================================================================
+
+\section{Introduction}
+\label{sec:intro}
+% Guideline: First paragraph after heading is not indented. Subsequent paragraphs are indented.
+This document serves as the standardized LaTeX template prepared according to Springer Computer Science Proceedings guidelines. Section headings are capitalized in Title Case (e.g., nouns, verbs, and major words capitalized).
+
+Introduce the broader context, motivation, and practical challenges here. For instance, explaining the role of generative AI and automated assessment tools in software engineering education.
+
+\subsection{Research Questions}
+\label{subsec:rqs}
+State the guiding research questions of your study clearly:
+\begin{itemize}
+    \item \textbf{RQ1:} How do students perceive the quality and acceptance of AI-generated feedback (accuracy, clarity, specificity, and actionability)?
+    \item \textbf{RQ2:} How does student agreement differ across distinct types or styles of AI feedback?
+    \item \textbf{RQ3:} How does student perception vary between question generation sources (e.g., codebase-derived vs. knowledge-graph-derived)?
+\end{itemize}
+
+\subsection{Contributions and Paper Structure}
+Summarize the key contributions of the paper:
+\begin{enumerate}
+    \item \textbf{Contribution 1:} Outline the first major conceptual or technical contribution.
+    \item \textbf{Contribution 2:} Outline the empirical dataset and evaluation methodology.
+    \item \textbf{Contribution 3:} Discuss the practical implications for intelligent tutoring systems.
+\end{enumerate}
+
+The remainder of this paper is structured as follows: Section~\ref{sec:related_work} reviews related literature; Section~\ref{sec:methodology} presents the methodology and architecture; Section~\ref{sec:experiments} details the experimental evaluation; Section~\ref{sec:results} discusses findings; Section~\ref{sec:threats} examines threats to validity; and Section~\ref{sec:conclusion} concludes the paper.
+
+% -------------------------------------------------------------------------
+\section{Related Work}
+\label{sec:related_work}
+Discuss relevant prior work in the literature. Citations are specified using square brackets and consecutive numbers. For single citations, use \cite{smith1981identification}. Multiple citations should be grouped and ordered numerically, such as \cite{czajkowski2001grid,foster1999grid,foster2002physiology}. When author names are used in the text, write: Foster and Kesselman~\cite{foster1999grid} demonstrated that...
+
+\subsection{AI-Assisted Education and Feedback}
+Review existing approaches in automated feedback generation, large language models (LLMs), and cognitive load reduction in programming education.
+
+\subsection{Evaluation of Feedback Quality}
+Discuss prior frameworks evaluating constructive feedback, accuracy, transparency, and student receptivity.
+
+% -------------------------------------------------------------------------
+\section{Proposed Methodology and System Architecture}
+\label{sec:methodology}
+Detail the proposed framework, system design, data pipelines, or algorithmic foundations.
+
+\subsection{Architectural Overview}
+Equations must be numbered consecutively within parentheses at the right margin without section prefixes:
+\begin{equation}
+\label{eq:sample_formula}
+S(x, y) = \alpha \cdot A(x) + (1 - \alpha) \cdot B(y)
+\end{equation}
+where $S(x, y)$ represents the composite score, and $\alpha \in [0, 1]$ is a balancing parameter.
+
+\subsection{Visual Representation and Accessibility}
+% Springer Guideline:
+% 1. Figures must have captions BELOW the illustration.
+% 2. Vector graphics (PDF/EPS) preferred over raster images.
+% 3. Under EU Accessibility Act & WCAG, use \Description{...} for figure Alt Text.
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.85\textwidth]{format_constructs.pdf}
+    \Description{A diagram depicting the conceptual constructs and measurement framework used for evaluation.}
+    \caption{Overview of the conceptual construct framework and evaluation metrics.}
+    \label{fig:framework}
+\end{figure}
+
+As shown in Fig.~\ref{fig:framework}, all illustrations must be referenced directly in the text. Captions are set in 9-point font, centered if single-line, and justified if multi-line.
+
+% -------------------------------------------------------------------------
+\section{Empirical Evaluation and Survey Design}
+\label{sec:experiments}
+Describe the experimental setting, participant demographics, questionnaire instrumentation, and procedure.
+
+\subsection{Instrumentation and Construct Measurements}
+% Springer Guideline:
+% Table captions should ALWAYS appear ABOVE the table.
+% Use professional booktabs rules (\toprule, \midrule, \bottomrule).
+\begin{table}[htbp]
+\centering
+\caption{Summary of survey constructs, dimensions, and operational definitions.}
+\label{tab:constructs}
+\begin{tabular}{llp{7.5cm}}
+\toprule
+\textbf{Construct} & \textbf{Metric/Code} & \textbf{Operational Definition} \\
+\midrule
+Accuracy & ACC & Correctness of technical explanations and error diagnoses. \\
+Clarity & CLA & Ease of comprehension, structure, and readability. \\
+Specificity & SPE & Concrete pointers to lines of code or specific logic. \\
+Transparency & TRA & Explainability of why and how the feedback was derived. \\
+Actionability & ACT & Practical guidance on how to fix or refine the implementation. \\
+Acceptance & ACP & Student agreement and willingness to adopt recommendations. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Table~\ref{tab:constructs} highlights the evaluation dimensions. The numbering of tables and figures continues sequentially throughout the manuscript.
+
+% -------------------------------------------------------------------------
+\section{Results and Discussion}
+\label{sec:results}
+Present statistical analyses, survey findings, correlation matrices, and thematic student responses.
+
+\subsection{Analysis of Survey Constructs (RQ1)}
+Present findings addressing RQ1. Reference additional figures where necessary:
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.85\textwidth]{likert_items.pdf}
+    \Description{Distribution of student responses across Likert-scale evaluation items.}
+    \caption{Distribution of student responses across the Likert-scale items.}
+    \label{fig:likert}
+\end{figure}
+
+Fig.~\ref{fig:likert} illustrates the Likert-scale distributions observed in the participant cohort.
+
+\subsection{Cross-Feedback Comparative Analysis (RQ2)}
+Examine differences among feedback styles or presentation formats.
+
+\subsection{Source Modality Comparison (RQ3)}
+Compare question generation modalities (e.g., codebase extraction vs. knowledge graph).
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.85\textwidth]{item_correlations.pdf}
+    \Description{Correlation heatmap showing inter-construct relationships among survey items.}
+    \caption{Correlation matrix across evaluation dimensions and survey questions.}
+    \label{fig:correlations}
+\end{figure}
+
+Fig.~\ref{fig:correlations} depicts the inter-item correlation coefficients.
+
+% -------------------------------------------------------------------------
+\section{Threats to Validity}
+\label{sec:threats}
+Discuss construct validity, internal validity, external validity, and reliability considerations.
+
+% -------------------------------------------------------------------------
+\section{Conclusion and Future Work}
+\label{sec:conclusion}
+Summarize the main takeaways, lessons learned, and future research directions.
+
+% =========================================================================
+% Back Matter: Credits (Acknowledgements & Disclosure of Interests)
+% Springer Guideline: Required placement before Appendix / Bibliography
+% =========================================================================
+\begin{credits}
+\subsubsection{\ackname}
+This research was supported by Project Grant Number XYZ. The authors express their gratitude to the student participants and course instructors for their support during data collection.
+
+\subsubsection{\discintname}
+The authors have no competing interests to declare that are relevant to the content of this article.
+\end{credits}
+
+% =========================================================================
+% Appendix (Optional)
+% Springer Guideline: If present, place in front of the references.
+% =========================================================================
+\appendix
+\section{Survey Instrument Details}
+\label{sec:appendix_survey}
+Detailed survey questions and Likert-scale coding schemes can be provided here. Continues the same formatting standards as the main text.
+
+% =========================================================================
+% Bibliography
+% Springer Guideline:
+% Use splncs04.bst style with alphabetic sorting and DOIs for CrossRef.
+% =========================================================================
+\bibliographystyle{splncs04}
+\bibliography{references}
+
+\end{document}
+

@@ -1,0 +1,26 @@
+\begin{thebibliography}{1}
+\providecommand{\url}[1]{\texttt{#1}}
+\providecommand{\urlprefix}{URL }
+\providecommand{\doi}[1]{https://doi.org/#1}
+
+\bibitem{czajkowski2001grid}
+Czajkowski, K., Fitzgerald, S., Foster, I., Kesselman, C.: Grid information
+  services for distributed resource sharing. In: Proceedings of the 10th IEEE
+  International Symposium on High Performance Distributed Computing. pp.
+  181--184. IEEE Press, New York (2001). \doi{10.1109/HPDC.2001.945188}
+
+\bibitem{foster1999grid}
+Foster, I., Kesselman, C.: The Grid: Blueprint for a New Computing
+  Infrastructure. Morgan Kaufmann, San Francisco (1999)
+
+\bibitem{foster2002physiology}
+Foster, I., Kesselman, C., Nick, J., Tuecke, S.: The physiology of the grid: An
+  open grid services architecture for distributed systems integration. Tech.
+  rep., Global Grid Forum (2002)
+
+\bibitem{smith1981identification}
+Smith, T.F., Waterman, M.S.: Identification of common molecular subsequences.
+  Journal of Molecular Biology  \textbf{147}(1),  195--197 (1981).
+  \doi{10.1016/0022-2836(81)90087-5}
+
+\end{thebibliography}

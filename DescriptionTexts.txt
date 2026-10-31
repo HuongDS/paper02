@@ -1,1 +1,3 @@
-1 (Fig. 1) - In LaTeX you may insert your alternative texts into your manuscript using the \verb |\Description | command in a \verb |figure| environment
+1 (Fig. 1) - A diagram depicting the conceptual constructs and measurement framework used for evaluation.
+2 (Fig. 2) - Distribution of student responses across Likert-scale evaluation items.
+3 (Fig. 3) - Correlation heatmap showing inter-construct relationships among survey items.
