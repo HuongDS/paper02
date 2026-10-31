@@ -19,6 +19,9 @@
 % 2. Figures & Graphics
 % -------------------------------------------------------------------------
 \usepackage{graphicx}
+\usepackage{float}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,fit,calc,backgrounds}
 % Set search path for graphic files (e.g., pdf, eps, png)
 \graphicspath{{./figures/}{./}}
 
@@ -107,35 +110,20 @@ Oral defense (viva) in software engineering capstone projects is essential for a
 \section{Introduction}
 \label{sec:intro}
 
-Formative feedback is widely recognized as an important factor in improving student learning. However, its effectiveness depends largely on how learners understand, interpret, and act on the guidance they receive~\cite{hattie2007power,shute2008focus}. Technically accurate feedback does not necessarily lead to better understanding or meaningful revisions~\cite{carless2018feedback,winstone2017supporting}. Research on feedback literacy emphasizes that students need to interpret feedback, make judgments about their own work, and use the feedback to guide their actions. These activities are essential parts of the feedback process, rather than simply outcomes that occur after feedback is provided~\cite{carless2018feedback,winstone2017supporting}. In human-computer interaction, users' acceptance of automated feedback and willingness to act on it are also influenced by its perceived usefulness~\cite{davis1989perceived,venkatesh2003user}, as well as by psychological factors such as trust and users' tendency to accept or reject algorithmic judgments~\cite{lee2004trust,dietvorst2015algorithm,logg2019algorithm}.
+Formative feedback is effective only when learners accurately interpret, evaluate, and act upon the guidance they receive~\cite{hattie2007power,shute2008focus,carless2018feedback,winstone2017supporting}. In automated environments, learners' willingness to accept and act on feedback depends on perceived usefulness~\cite{davis1989perceived,venkatesh2003user}, calibrated trust, and tendencies toward algorithm aversion or appreciation~\cite{lee2004trust,dietvorst2015algorithm,logg2019algorithm}. While large language models (LLMs) enable scalable formative feedback in computing education~\cite{kasneci2023chatgpt,denny2024computing,dai2023can}, general-purpose models remain prone to code-context hallucinations~\cite{hellas2023exploring,kiesler2023exploring}, prompt injection vulnerabilities~\cite{liffiton2023codehelp}, and uneven learner trust across accuracy, specificity, and evidentiary transparency~\cite{escalante2023ai,zhang2024students,nazaretsky2024ai,er2025assessing}.
 
-With the rapid development of generative artificial intelligence, large language models (LLMs) are increasingly used in computing education to identify code issues and provide formative feedback at scale~\cite{kasneci2023chatgpt,denny2024computing,dai2023can}. However, general-purpose LLMs may generate inaccurate feedback when they lack sufficient context about the actual student codebase, including cases in which they misinterpret code or produce unsupported explanations~\cite{hellas2023exploring,kiesler2023exploring}. In addition, deploying LLMs in educational assessment requires appropriate safeguards to maintain pedagogical boundaries and reduce the risk of misuse, including prompt injection attacks~\cite{liffiton2023codehelp}. Recent studies in programming education and higher education have also found that students' perceptions of AI-generated feedback vary across several dimensions, including technical accuracy, level of detail, the availability of supporting evidence, and trust in comparison with feedback from human experts~\cite{escalante2023ai,zhang2024students,nazaretsky2024ai,er2025assessing}.
+Two technical and pedagogical gaps motivate this work. \textbf{Gap 1 (Automated Viva with Hybrid Context Routing):} Traditional input--output autograders cannot verify individual comprehension of collaborative, multi-language capstone repositories; although automated program questioning has been explored for small programs~\cite{lehtinen2021lets}, scenario-based oral defenses (vivas) integrating static call-graph extraction with complexity-aware context routing remain underexplored. \textbf{Gap 2 (Feedback Configurations and Single-Model Sycophancy):} Single-model evaluators (\textit{LLM-as-a-Judge}) exhibit sycophancy and grading bias~\cite{zheng2023judging}. While distinct formative paradigms—\textit{Sandwich}~\cite{parkes2013feedback}, \textit{Rubric}~\cite{jonsson2007use}, \textit{Explainable}~\cite{khosravi2022explainable}, and role-decoupled \textit{Multi-LLM Ensembles}~\cite{du2024improving,zheng2023judging}—offer complementary pedagogical mechanisms, randomized within-subject evaluations of these configurations on students' own capstone codebases remain scarce.
 
-Two research gaps motivate this study:
+To address these gaps, we present \textbf{PACE} (\textit{Project Assistance and Course Evaluation}), an AI-assisted viva system deployed at FPT University. PACE parses C\#/.NET (Roslyn) and Java, JavaScript, and TypeScript (tree-sitter) repositories, routing business functions with $N_w \le 10$ call-graph nodes to raw source code (\texttt{Raw}) and those with $N_w > 10$ to Mermaid control/data-flow graphs (\texttt{Graph}) for scenario question generation via OpenAI \texttt{gpt-6-luna}. A three-layer guardrail pipeline with XML delimiter sandboxing secures evaluation across three single-LLM formats (\textit{Sandwich}, \textit{Rubric}, \textit{Explainable}; DeepSeek-V3) and a two-stage \textit{Researching} ensemble chaining DeepSeek-V3 (\textit{Code Inspector}) with Groq \texttt{openai/gpt-oss-120b} (\textit{Pedagogical Synthesizer and Rubric Grader}).
 
-\begin{itemize}
-    \item \textbf{Gap 1 (Automated Viva Assessment and Hybrid Ground-Truth Contexts in Team Capstone Projects):}
-    Software engineering capstone projects often involve shared codebases developed collaboratively by student teams. Traditional input-output autograders can assess whether a program produces the expected results, but they are less suited to determining whether individual students understand the code and its architecture. Although asking students questions about their own programs has been explored as a way to assess code understanding~\cite{lehtinen2021lets}, the use of automated, scenario-based oral defenses (viva) that combine multi-language static analysis with complexity-aware routing between different code representations remains underexplored.
-
-    \item \textbf{Gap 2 (Formative Feedback Formats and Single-Model Sycophancy):}
-    Using a single LLM as an automated evaluator (\textit{LLM-as-a-Judge}) can introduce biases, including a tendency to favor certain responses or follow patterns that affect grading consistency~\cite{zheng2023judging}. In practical systems, AI-generated feedback may combine praise, rubric-based assessment, code evidence, and model orchestration in different configurations. These configurations reflect different approaches to formative feedback: the \textit{Sandwich} format balances positive and corrective comments~\cite{parkes2013feedback}; \textit{Rubric} uses explicit scoring criteria to support consistent evaluation~\cite{jonsson2007use}; \textit{Explainable} emphasizes evidence and transparency~\cite{khosravi2022explainable}; and the \textit{Multi-LLM Ensemble} uses multiple models in coordinated roles to improve evaluation quality and reduce dependence on a single model's judgment~\cite{du2024improving,zheng2023judging}. However, comparative within-subject studies of these feedback formats, based on students' actual capstone project codebases and focused on learners' perceptions, remain limited.
-\end{itemize}
-
-To address these gaps, we present \textbf{PACE} (\textit{Project Assistance and Course Evaluation}), an AI-assisted viva assessment system deployed at FPT University. PACE uses multi-language static analysis tools, including Roslyn for C\#/.NET and Tree-sitter for Java, JavaScript, and TypeScript, to extract control-flow and data-flow information and represent it as graphs. A complexity-aware context router selects raw source code (\texttt{Raw}) when the number of distinct function nodes, $N_w$, is at most 10 ($N_w \leq 10$), and Mermaid flow graphs (\texttt{Graph}) when $N_w > 10$. These representations are used to generate scenario-based questions grounded in the project code through OpenAI \texttt{gpt-6-luna}. To support safe evaluation and feedback generation, PACE incorporates a three-layer safety guardrail architecture comprising input, execution, and output guardrails, together with XML-based delimiter sandboxing. The delimiters distinguish the ground-truth context, exam question, suggested answer, and student answer using the tags \texttt{<ground\_truth\_context>}, \texttt{<exam\_question>}, \texttt{<suggested\_answer>}, and \texttt{<student\_answer>}. These safeguards are designed to reduce the risk of prompt injection and keep the evaluation process aligned with the intended task. PACE supports four formative feedback formats: three single-LLM configurations powered by DeepSeek-V3 (\textit{Sandwich}, \textit{Rubric}, and \textit{Explainable}) and a role-decoupled \textit{Researching} mode, referred to as the \textit{Multi-LLM Ensemble}. In this mode, DeepSeek-V3 acts as the \textit{Code Inspector}, while Groq (\texttt{openai/gpt-oss-120b}) serves as the \textit{Pedagogical Synthesizer and Rubric Grader}.
-
-We conducted a randomized, student-blinded, within-subject experiment in which students answered scenario-based questions about business rules in different modules of their team's project repositories. The feedback formats were randomly assigned without replacement, and students rated each feedback instance using a 15-item, five-point Likert-scale instrument in which all items were scored in the same direction. The instrument was developed with reference to the Feedback Perceptions Questionnaire (FPQ), research on explainable AI (XAI) and argument persuasiveness, psychological safety, and the Technology Acceptance Model (TAM) and Unified Theory of Acceptance and Use of Technology (UTAUT). We also considered established methods for assessing measurement reliability and identifying potential response and method biases~\cite{cronbach1951coefficient,hayes2020use,podsakoff2003common,kim2019straightlining,vansonderen2013ineffectiveness}. This study addresses three research questions:
-
+In a randomized, student-blinded, within-subject study, 86 students answered four scenario questions on their team repositories and rated each feedback configuration on a 15-item, unidirectionally keyed Likert instrument grounded in FPQ, XAI, argument persuasiveness, psychological safety, and TAM/UTAUT frameworks~\cite{cronbach1951coefficient,hayes2020use,podsakoff2003common,kim2019straightlining,vansonderen2013ineffectiveness}. We investigate three research questions:
 \begin{itemize}
     \item[\textbf{RQ1}] How do students evaluate the content quality, perceived usefulness, and overall acceptance of LLM-generated feedback on viva responses about their own capstone project codebases?
-
     \item[\textbf{RQ2}] How do students' agreement rates and multidomain ratings differ across the four feedback formats (\textit{Sandwich}, \textit{Rubric}, \textit{Explainable}, and \textit{Researching}/\textit{Multi-LLM Ensemble}) based on non-parametric tests and pairwise comparisons with corrections for multiple testing~\cite{friedman1937use,holm1979simple,lakens2017equivalence}?
-
     \item[\textbf{RQ3}] To what extent are student acceptance and perceived feedback quality associated with the use of raw source-code contexts ($N_w \leq 10$) versus Mermaid flow-graph contexts ($N_w > 10$) in the deployed system?
 \end{itemize}
 
-The main contribution of this work is an integrated AI-assisted viva assessment system with multiple safety safeguards, together with an empirical evaluation of different formative feedback formats for capstone project defense preparation. This study extends existing approaches to automated program questioning~\cite{lehtinen2021lets} to team-based project defense and examines students' agreement with AI judgments separately from their perceptions of feedback actionability, learning-related motivation, and intention to use the system. The findings represent learners' self-reported perceptions under a controlled experimental design and statistical analysis. They do not directly establish expert-verified technical accuracy, actual revision behavior, or long-term improvements in learning outcomes.
-
-The remainder of this paper is structured as follows: Section~\ref{sec:related_work} reviews related literature; Section~\ref{sec:methodology} presents the methodology and architecture; Section~\ref{sec:experiments} details the experimental evaluation; Section~\ref{sec:results} discusses findings; Section~\ref{sec:threats} examines threats to validity; and Section~\ref{sec:conclusion} concludes the paper.
+This work contributes an integrated, guardrailed viva assessment architecture and a controlled within-subject evaluation extending automated program questioning~\cite{lehtinen2021lets} to collaborative capstone repositories, distinguishing agreement with AI judgments from actionability, motivation, and future-use intention. Section~\ref{sec:related_work} reviews related work; Section~\ref{sec:methodology} details the PACE architecture; Section~\ref{sec:experiments} describes the experimental design; Section~\ref{sec:results} presents results; Section~\ref{sec:discussion} discusses findings and threats to validity (Section~\ref{sec:threats}); and Section~\ref{sec:conclusion} concludes.
 
 % -------------------------------------------------------------------------
 \section{Related Work}
@@ -165,52 +153,58 @@ While prior work has used automated comprehension checks to assess program under
 
 Figure~\ref{fig:overview} summarizes the PACE pipeline, including repository analysis, complexity-aware context routing, question generation, and multi-format pedagogical evaluation.
 
-% Keep the original TikZ figure unchanged.
-\begin{figure}[htbp]
-  \centering
-  \includegraphics[width=\textwidth]{fig1.eps}
-  \Description{Architectural overview of the PACE pipeline, including static analysis, hybrid routing, question generation, and multi-format evaluation.}
-  \caption{Overview of the PACE system pipeline, from repository analysis to multi-format feedback.}
-  \label{fig:overview}
+\begin{figure}[!ht]
+\centering
+\vspace{-2mm}
+\begin{tikzpicture}[
+  scale=0.86, every node/.style={transform shape},
+  font=\scriptsize,
+  box/.style={draw, rounded corners=2pt, align=center, minimum height=7.2mm, text width=19mm, fill=white},
+  fmt/.style={draw, rounded corners=2pt, align=center, minimum height=4.8mm, text width=17mm, fill=black!4},
+  arr/.style={-{Stealth[length=1.5mm]}, semithick},
+  node distance=3.2mm and 4.2mm]
+  \node[box] (repo) {Team\\repository};
+  \node[box, right=of repo] (parse) {Static analysis\\(Roslyn, tree-sitter)};
+  \node[box, right=of parse] (flow) {Business functions,\\call graph, Mermaid};
+  \node[box, right=of flow] (q) {LLM question\\generation};
+  \node[box, below=8mm of q] (ans) {Student answers\\4 questions};
+  \node[box, left=of ans] (perm) {Random\\permutation of\\4 configurations};
+  \node[box, left=of perm, text width=21mm] (ctx) {Reference\\context (code\\or graph) + guards};
+  \node[box, left=of ctx, text width=15mm] (llm) {Configuration-\\specific generation};
+  \node[fmt, below=5.8mm of llm, xshift=-4mm] (f1) {Sandwich};
+  \node[fmt, right=2mm of f1] (f2) {Rubric};
+  \node[fmt, right=2mm of f2] (f3) {Explainable};
+  \node[fmt, right=2mm of f3, text width=19mm] (f4) {Researching\\(two-stage design)};
+  \begin{scope}[on background layer]\node[draw, dashed, rounded corners=2pt, inner sep=1.3mm, fit=(f1)(f4)] (fmts) {};\end{scope}
+  \node[box, right=4mm of fmts, text width=15mm] (survey) {15-item rating\\+ free text};
+  \draw[arr] (repo) -- (parse); \draw[arr] (parse) -- (flow); \draw[arr] (flow) -- (q);
+  \draw[arr] (q) -- (ans); \draw[arr] (ans) -- (perm); \draw[arr] (perm) -- (ctx); \draw[arr] (ctx) -- (llm);
+  \draw[arr] (llm.south) -- ++(0,-2mm) -| (f1.north);
+  \draw[arr] (llm.south) -- ++(0,-2mm) -| (f2.north);
+  \draw[arr] (llm.south) -- ++(0,-2mm) -| (f3.north);
+  \draw[arr] (llm.south) -- ++(0,-2mm) -| (f4.north);
+  \draw[arr] (fmts) -- (survey);
+  \draw[arr, dashed] (flow.south) |- (ctx.north);
+\end{tikzpicture}
+\Description{Pipeline diagram. A team repository is parsed by static analysers into business functions, call graphs and Mermaid diagrams, which feed LLM question generation. Students answer four questions; the four feedback configurations are randomly permuted across the answers; the evaluator receives a reference context from the code and produces Sandwich, Rubric, Explainable or Researching feedback, which students rate on 15 items.}
+\caption{Overview of PACE. Questions and the evaluator's reference context are both derived from the student's own repository. Each student's four answers receive the four configurations in a random order.}
+\label{fig:overview}
+\vspace{-3mm}
 \end{figure}
 
 \subsection{Multi-Language Static Analysis and Complexity-Aware Context Routing}
 
-For each submitted team repository, PACE clones the target branch and parses C\#/.NET source code using Roslyn and Java (Spring Boot), JavaScript, and TypeScript (Express, NestJS, Hono) source code using tree-sitter. Extracted API endpoints and controllers are grouped into user-facing \emph{business functions} (e.g., ``budget management'' or ``asset auction'') through metadata analysis performed by Gemini 3.1 Flash Lite, subject to instructor review and confirmation.
-
-To assess code complexity and select an appropriate context representation, PACE computes the number of distinct function nodes $N_w$ in each business function's call graph, derived from entry points and directed call relationships. A complexity-aware hybrid router then selects the context representation. When $N_w \le 10$, the system retrieves raw source code (\texttt{Raw}) to preserve fine-grained details of conditional expressions. When $N_w > 10$, it uses a Mermaid control- and data-flow graph (\texttt{Graph}) containing ordered edges, branch conditions, and return types to reduce token overhead and syntactic noise. Scenario-based questions are generated for each business function using OpenAI \texttt{gpt-6-luna} (temperature 0.3, strict JSON schema output). Question generation follows a business-language-only constraint that prohibits technical keywords (such as \emph{Controller}, \emph{DTO}, or \emph{SQL}). Questions are organized into three difficulty levels based on exception branches: Happy Path, Single Exception, and Double Exception.
+For each submitted team repository, PACE clones the target branch and parses C\#/.NET source code via Roslyn and Java (Spring Boot), JavaScript, and TypeScript (Express, NestJS, Hono) via tree-sitter. Extracted API endpoints and controllers are grouped into user-facing \emph{business functions} (e.g., ``budget management'' or ``asset auction'') via metadata analysis using Gemini 3.1 Flash Lite, subject to instructor review. To select an appropriate context representation, PACE computes the number of distinct function nodes $N_w$ in each business function's call graph. A complexity-aware hybrid router retrieves raw source code (\texttt{Raw}) when $N_w \le 10$ to preserve fine-grained conditional expressions, and routes functions with $N_w > 10$ to a Mermaid control- and data-flow graph (\texttt{Graph}) encoding ordered edges, branch conditions, and return types to reduce token overhead and syntactic noise. Scenario-based questions are generated using OpenAI \texttt{gpt-6-luna} (temperature 0.3, strict JSON schema) under a business-language-only constraint (excluding implementation terms such as \emph{Controller}, \emph{DTO}, or \emph{SQL}) across three exception-branch difficulty levels: Happy Path, Single Exception, and Double Exception.
 
 \subsection{Guardrailed Multi-Format Evaluation Engine and Multi-LLM Ensemble}
 
-When a student submits $k = 4$ scenario answers across different business functions, PACE uses an atomic database transaction ($<200$ ms) with row-level locking (\texttt{SELECT FOR UPDATE}) to maintain data integrity before invoking external LLMs. Each submission is processed through a three-layer AI guardrail architecture: (1) an \emph{Input Guardrail} that applies 17 blacklist-based checks for prompt injection and jailbreak attempts in English and Vietnamese; (2) an \emph{Execution Guardrail} that blocks malicious scripts and binary payloads using compiled regular expressions and sanitizes Unicode control characters; and (3) an \emph{Output Guardrail} that validates strict JSON structure and checks for potential API key leakage.
+When a student submits $k = 4$ scenario answers across distinct business functions, PACE executes an atomic database transaction ($<200$ ms) with row-level locking (\texttt{SELECT FOR UPDATE}) before invoking external LLMs. Submissions pass through a three-layer guardrail pipeline: (1) an \emph{Input Guardrail} applying 17 bilingual (English/Vietnamese) blacklist checks against prompt injection and jailbreak attempts; (2) an \emph{Execution Guardrail} blocking malicious scripts and binary payloads via compiled regular expressions while sanitizing Unicode control characters; and (3) an \emph{Output Guardrail} enforcing strict JSON schemas and preventing API key leakage. To mitigate indirect prompt injection and enforce instruction hierarchy, inputs are sandboxed within four XML delimiter tags: \texttt{<ground\_truth\_context>} (raw code or Mermaid graph), \texttt{<exam\_question>}, \texttt{<suggested\_answer>}, and \texttt{<student\_answer>}.
 
-To reduce the risk of indirect prompt injection and reinforce the instruction hierarchy, the evaluation engine separates input components using XML delimiters:
-\begin{quote}
-\scriptsize
-\begin{verbatim}
-<ground_truth_context> {Raw code or Mermaid graph} </ground_truth_context>
-<exam_question> {Sanitized scenario question} </exam_question>
-<suggested_answer> {Reference suggested answer} </suggested_answer>
-<student_answer> {Sanitized student answer} </student_answer>
-\end{verbatim}
-\normalsize
-\end{quote}
-
-The system supports four feedback formats, assigned through a random permutation without replacement within each student ($\mathcal{F} = \{\text{Sandwich},$ $\text{Rubric},$ $\text{Explainable},$ $\text{Researching}\}$), ensuring that every student encounters each configuration exactly once:
-
-\begin{itemize}
-  \item \textbf{Sandwich}: Feedback structured into positive reinforcement, constructive criticism, and actionable next steps, generated by DeepSeek-V3 (\texttt{deepseek-chat}, temperature 0.2).
-
-  \item \textbf{Rubric}: Quantitative feedback assessing technical competencies using a five-point scoring scale and detailed commentary, generated by DeepSeek-V3.
-
-  \item \textbf{Explainable}: Evidence-based feedback incorporating explicit source-code citations (\texttt{code\_evidence}) and explanations of logical reasoning (\texttt{logic\_explanation}), generated by DeepSeek-V3.
-
-  \item \textbf{Researching (Multi-LLM Ensemble)}: A role-decoupled, two-stage architecture designed to mitigate grading biases and sycophancy associated with single-model evaluation. In Stage 1, DeepSeek-V3 serves as a \textit{Code Inspector}, extracting code evidence and identifying logical inconsistencies. In Stage 2, Groq (\texttt{openai/gpt-oss-120b}) serves as a \textit{Pedagogical Synthesizer and Rubric Grader}, integrating the inspection report from DeepSeek-V3 to generate comprehensive pedagogical feedback and rubric scores. A multistage fault-tolerance mechanism handles rate-limit errors (HTTP 429) through exponential backoff and falls back to single-model processing if downstream validation fails.
-\end{itemize}
+Each student's four responses are assigned to four feedback configurations via random permutation without replacement ($\mathcal{F} = \{\text{Sandwich},$ $\text{Rubric},$ $\text{Explainable},$ $\text{Researching}\}$). Three single-LLM formats are generated by DeepSeek-V3 (\texttt{deepseek-chat}, temperature 0.2): \textbf{Sandwich} structures feedback into positive reinforcement, constructive criticism, and actionable next steps; \textbf{Rubric} provides quantitative competency scores on a five-point scale with analytical commentary; and \textbf{Explainable} grounds feedback in explicit source-code citations (\texttt{code\_evidence}) and logical trace explanations (\texttt{logic\_explanation}). The fourth configuration, \textbf{Researching (Multi-LLM Ensemble)}, employs a role-decoupled two-stage pipeline to mitigate single-model sycophancy: Stage~1 uses DeepSeek-V3 as an objective \textit{Code Inspector} to extract code evidence and logical discrepancies, and Stage~2 uses Groq (\texttt{openai/gpt-oss-120b}) as a \textit{Pedagogical Synthesizer and Rubric Grader} to synthesize formative feedback and rubric scores, supported by exponential backoff for HTTP~429 rate limits and single-model fallback.
 
 \subsection{Empirical Data Collection and Survey Instrumentation}
 
-After receiving feedback, students evaluate each feedback instance through a web interface using a 15-item questionnaire with a five-point Likert response scale ($1 = \text{Strongly disagree}$ to $5 = \text{Strongly agree}$). All items are positively keyed. Drawing on the Feedback Perceptions Questionnaire (FPQ), explainable AI trustworthiness, argument persuasiveness, psychological safety, and TAM/UTAUT frameworks, the 15 items assess information and pedagogical quality (\texttt{ACCURACY}, \texttt{SPECIFICITY}, \texttt{CLARITY}), explainability (\texttt{TRANSPARENCY}), usefulness and actionability (\texttt{USEFULNESS}, \texttt{ACTIONABILITY}), trust and fairness (\texttt{COMPETENCE TRUST}, \texttt{RELIABILITY}, \texttt{FAIRNESS}), affect and psychological safety (\texttt{AFFECT}, \texttt{PSYCHOLOGICAL SAFETY}), and behavioral acceptance (\texttt{ACCEPTANCE}, \texttt{PERSUASIVENESS}, \texttt{WILLINGNESS}, \texttt{BEHAVIORAL INTENTION}). The data export pipeline automatically excludes load-testing accounts (identified by MSSV values beginning with \texttt{K6}) to ensure that the resulting datasets contain only eligible student responses.
+Immediately after receiving each feedback instance, students rate it via a web interface on a 15-item, unidirectionally keyed five-point Likert scale ($1 = \text{Strongly disagree}$ to $5 = \text{Strongly agree}$) alongside optional free-text comments. The export pipeline automatically filters out load-testing accounts (MSSV prefixes starting with \texttt{K6}) to retain only verified student submissions.
 
 % -------------------------------------------------------------------------
 \section{Experimental Design}
@@ -230,24 +224,27 @@ After submitting each answer and receiving AI-generated feedback, students evalu
 \caption{Survey instrument (translated from Vietnamese into English), comprising 15 positively keyed Likert items grouped into six conceptual constructs.}
 \label{tab:instrument}
 \centering\scriptsize
+\renewcommand{\arraystretch}{0.86}
+\setlength{\aboverulesep}{1pt}
+\setlength{\belowrulesep}{1.2pt}
 \setlength\tabcolsep{3pt}
 \begin{tabular}{@{}p{19mm}p{25mm}p{72mm}@{}}
 \toprule
 Construct & Item Code & Statement \\
 \midrule
-\multirow{3}{19mm}{Information \& Pedagogical Quality}
+\multirow{2}{19mm}{Information \& Quality}
  & \texttt{ACCURACY} & The AI's comment correctly identifies the problems and errors in my answer. \\
  & \texttt{SPECIFICITY} & The AI points exactly to which part of my answer needs revisiting, rather than commenting in general. \\
  & \texttt{CLARITY} & The wording and presentation of the AI's comment are clear and unambiguous. \\
 \midrule
-\multirow{1}{19mm}{Explainability}
+Explainability
  & \texttt{TRANSPARENCY} & I understand which academic criteria and evidence the AI used to assess my answer. \\
 \midrule
 \multirow{2}{19mm}{Usefulness \& Actionability}
  & \texttt{USEFULNESS} & This AI tool serves as an effective learning assistant for my project work. \\
  & \texttt{ACTIONABILITY} & After reading the feedback, I know exactly which technical steps to take to improve my answer. \\
 \midrule
-\multirow{3}{19mm}{Trust, Reliability \& Fairness}
+\multirow{2}{19mm}{Trust \& Fairness}
  & \texttt{COMPETENCE TRUST} & I trust the technical expertise and analytical capability of this AI system. \\
  & \texttt{RELIABILITY} & The AI assesses consistently and does not change its grading standards at random. \\
  & \texttt{FAIRNESS} & The AI's assessment fairly reflects the effort and actual quality of my answer. \\
@@ -256,13 +253,14 @@ Construct & Item Code & Statement \\
  & \texttt{AFFECT} & I feel motivated and encouraged to keep learning after reading the AI's comments. \\
  & \texttt{PSYCHOLOGICAL SAFETY} & Receiving AI feedback reduces the psychological pressure compared to human peer or instructor critique. \\
 \midrule
-\multirow{4}{19mm}{Acceptance \& Behavioral Intention}
+\multirow{3}{19mm}{Acceptance \& Intention}
  & \texttt{ACCEPTANCE} & I agree with the AI's judgment regarding the strengths and weaknesses of my answer. \\
  & \texttt{PERSUASIVENESS} & The arguments and evidence provided by the AI are highly persuasive, leaving me convinced without wanting to argue back. \\
  & \texttt{WILLINGNESS} & Based on this comment, I am ready to start refactoring or revising my answer right away. \\
  & \texttt{BEHAVIORAL INTENTION} & I intend to continue using this LLM system to receive feedback for future course projects. \\
 \bottomrule
 \end{tabular}
+\vspace{-2mm}
 \end{table}
 
 \subsection{Dataset and Experimental Procedure}
@@ -309,6 +307,9 @@ To examine potential response-pattern anomalies, we identified 64 instances (18.
 \caption{Item ratings across 344 feedback instances. CI: 95\% repository-bootstrap confidence interval for the mean (28 repositories). Agree/Disagree: percentage of ratings $\ge 4$ / $\le 2$. $^*$The unweighted mean calculated directly from the 15 rounded item means is $4.06$, which differs slightly from the multi-item composite mean ($4.07$) due to rounding effects across individual item averages.}
 \label{tab:rq1}
 \centering\scriptsize
+\renewcommand{\arraystretch}{0.86}
+\setlength{\aboverulesep}{1pt}
+\setlength{\belowrulesep}{1.2pt}
 \setlength\tabcolsep{4pt}
 \begin{tabular}{@{}lcccc@{}}
 \toprule
@@ -331,6 +332,7 @@ Item Code & Mean (SD) & 95\% CI & Agree (\%) & Disagree (\%) \\
 \texttt{BEHAVIORAL INTENTION} & 3.80 (0.85) & [3.65, 3.94] & 68.0 & 5.2 \\
 \bottomrule
 \end{tabular}
+\vspace{-2mm}
 \end{table}
 
 Table~\ref{tab:rq1} summarizes item ratings across all 344 feedback instances. Mean ratings were above the neutral midpoint ($3.0$) for every item. The exploratory multidomain composite, the AI Agreement Index (AAI), had a mean of $4.07$ (SD $0.64$, 95\% repository-bootstrap CI $[3.90, 4.23]$). The highest agreement rates were observed for perceived usefulness ($84.0\%$), accuracy ($83.4\%$), specificity ($83.4\%$), and fairness ($81.4\%$). Explicit disagreement (ratings $\le 2$) did not exceed $7.3\%$ for any of the fifteen items.
@@ -345,6 +347,9 @@ Table~\ref{tab:drivers} presents student fixed-effects regression coefficients (
 \caption{Student fixed-effects regressions (Eq.~\ref{eq:drivers}). Cells report outcome rating points per full-sample predictor SD [95\% repository-bootstrap CI], based on 5,000 bootstrap replicates. Configuration indicators are included.}
 \label{tab:drivers}
 \centering\scriptsize
+\renewcommand{\arraystretch}{0.86}
+\setlength{\aboverulesep}{1pt}
+\setlength{\belowrulesep}{1.2pt}
 \setlength\tabcolsep{2.5pt}
 \begin{tabular}{@{}lccc@{}}
 \toprule
@@ -357,6 +362,7 @@ Affect (\texttt{AFFECT}) & $-0.09$ [$-0.20, 0.03$] & $0.27$ [$0.03, 0.46$] & $-0
 Psychological Safety & $-0.05$ [$-0.12, 0.00$] & $-0.03$ [$-0.17, 0.07$] & $0.07$ [$-0.09, 0.25$] \\
 \bottomrule
 \end{tabular}
+\vspace{-2mm}
 \end{table}
 
 \subsection{RQ2: Differences Between Feedback Configurations}
@@ -365,6 +371,9 @@ Psychological Safety & $-0.05$ [$-0.12, 0.00$] & $-0.03$ [$-0.17, 0.07$] & $0.07
 \caption{All six paired feedback-configuration contrasts. Mean differences [95\% repository-bootstrap CI for Acceptance; 90\% CI for AAI equivalence assessment], based on 5,000 bootstrap replicates. Positive values favor the first configuration.}
 \label{tab:rq2}
 \centering\scriptsize
+\renewcommand{\arraystretch}{0.86}
+\setlength{\aboverulesep}{1pt}
+\setlength{\belowrulesep}{1.2pt}
 \setlength\tabcolsep{3pt}
 \begin{tabular}{@{}lcc@{}}
 \toprule
@@ -378,6 +387,7 @@ Rubric -- Researching & -0.070 [-0.274, 0.120] & -0.085 [-0.162, -0.014] \\
 Explainable -- Researching & -0.012 [-0.176, 0.153] & -0.027 [-0.076, 0.025] \\
 \bottomrule
 \end{tabular}
+\vspace{-2mm}
 \end{table}
 
 Table~\ref{tab:rq2} presents the paired contrasts among the four feedback configurations. All six 95\% repository-bootstrap confidence intervals for direct acceptance (\texttt{ACCEPTANCE}) included zero, providing no evidence of statistically significant pairwise differences at the nominal 5\% level. Mean scores on the secondary AAI composite ranged from $4.01$ (\textit{Rubric}) to $4.12$ (\textit{Sandwich}). An exploratory Friedman test yielded $\chi^2(3) = 23.04$, $p < .001$, and Kendall's $W = .089$, whereas an omnibus comparison using a mixed-effects model with student-specific random intercepts yielded $p = .084$.
@@ -395,6 +405,9 @@ Mean acceptance ratings were $4.20$ for raw-code questions and $4.06$ for graph-
 \caption{RQ3 outcomes by context type. Descriptive means are reported, while $b_\text{raw}$ adjusts for student fixed effects and feedback configuration. CIs are based on repository-level bootstrapping.}
 \label{tab:rq3}
 \centering\scriptsize
+\renewcommand{\arraystretch}{0.86}
+\setlength{\aboverulesep}{1pt}
+\setlength{\belowrulesep}{1.2pt}
 \begin{tabular}{@{}lccc@{}}
 \toprule
 Outcome Metric & Graph Context ($n=280$) & Raw Code Context ($n=64$) & $b_\text{raw}$ [95\% CI] \\
@@ -403,6 +416,7 @@ Acceptance (\texttt{ACCEPTANCE}) & 4.06 & 4.20 & 0.034 [$-0.180, 0.257$] \\
 AAI (Secondary Composite) & 4.06 & 4.14 & 0.072 [$-0.025, 0.187$] \\
 \bottomrule
 \end{tabular}
+\vspace{-2mm}
 \end{table}
 \fi
 
@@ -422,17 +436,7 @@ The identification of straight-lining in 18.6\% of feedback-rating instances hig
 \subsection{Threats to Validity}
 \label{sec:threats}
 
-\paragraph{Internal Validity.}
-Because each feedback configuration was applied to a distinct student answer addressing a different scenario question, potential confounding influences from question difficulty, cognitive load, and order effects cannot be entirely ruled out. Although random permutation reduced systematic bias in configuration assignment, it did not eliminate variation in question characteristics or answer quality. Furthermore, for RQ3, context representation was determined by the complexity-aware router ($\tau = 10$), leaving business-function complexity confounded with context type. Database records documented configuration assignments but did not independently verify execution by external LLM providers.
-
-\paragraph{Construct Validity.}
-The survey instrument relied on self-reported perceptions without factor-analytic validation or independent assessment against expert evaluations of answer correctness. The secondary AAI composite assigned equal weight to conceptually distinct domains, while pooled internal consistency estimates combined within- and between-student variation. Additionally, concurrently collected self-reports may be subject to common-method variance~\cite{podsakoff2003common}. Neither longitudinal learning gains nor actual code revision behavior was measured.
-
-\paragraph{External Validity.}
-The study was conducted at a single institution (FPT University), with voluntary participation in a capstone viva preparation setting. These characteristics may limit the generalizability of the findings to other institutions, mandatory assessment environments, or introductory programming courses. The findings may also depend on the characteristics of the participating repositories, scenario questions, and LLM configurations used in this study.
-
-\paragraph{Statistical Conclusion Validity.}
-Repository-level bootstrapping accounted for the clustering of observations within project repositories. However, with only 28 repository clusters, the resulting percentile-bootstrap confidence intervals remain approximate. The regression models captured contemporaneous within-student associations rather than causal relationships. Moreover, the $\pm 0.25$ AAI equivalence margin, which was not independently validated against educationally meaningful differences, supports conclusions only within the chosen threshold rather than establishing definitive educational equivalence.
+\textbf{Internal validity:} Because each feedback configuration was applied to a distinct student answer addressing a different scenario question, confounding effects from question difficulty, cognitive load, and order cannot be ruled out despite random permutation; for RQ3, the complexity router ($\tau = 10$) confounds business-function complexity with context representation, and database logs recorded configuration assignments without independent provider-side execution telemetry. \textbf{Construct validity:} Ratings reflect unvalidated self-reports rather than expert-verified correctness, actual code revisions, or longitudinal learning gains; the secondary AAI equally weights distinct domains, pooled reliability combines within- and between-student variance, and concurrent self-reports risk common-method bias~\cite{podsakoff2003common}. \textbf{External validity:} Voluntary participation within a single institution (FPT University) for capstone viva preparation may limit generalizability to mandatory assessments, introductory courses, or other repository ecosystems and LLM backbones. \textbf{Statistical conclusion validity:} With 28 repository clusters, percentile-bootstrap confidence intervals remain approximate, fixed-effects regressions capture contemporaneous associations rather than causal effects, and the unvalidated $\pm 0.25$ AAI equivalence margin supports equivalence only within that statistical threshold.
 
 % -------------------------------------------------------------------------
 \section{Conclusion}
@@ -444,13 +448,10 @@ This study contributes an empirical field evaluation of multidimensional student
 
 \begin{credits}
 \subsubsection{\ackname}
-We thank the students and instructors of the software engineering capstone courses at FPT University for their participation and support throughout this study.
+We thank the students and capstone instructors at FPT University for their voluntary participation and support. Participation was voluntary and non-penalizing; all shared research artifacts were de-identified to protect participant privacy, with study coordination conducted in collaboration with course mentors (no formal IRB approval or exemption is claimed).
 
 \subsubsection{\discintname}
-The authors declare that they have no competing interests relevant to this study.
-
-\subsubsection{Research Ethics and Data Governance}
-Before participation, the research team explained the study objectives and the intended use of student responses in the presence of course instructors. Participation was voluntary, and students were explicitly assured that declining would not result in academic or administrative penalties. Institutional access and study coordination were arranged in collaboration with course mentors. Personal email addresses and identifying student credentials were excluded from all shared research artifacts, and source identifiers were kept confidential to protect participant privacy. These statements describe the voluntary participation and data management procedures implemented by the research team. The authors do not claim institutional review board (IRB) approval or exemption.
+The authors have no competing interests to declare that are relevant to the content of this article.
 \end{credits}
 
 \bibliographystyle{splncs04}
