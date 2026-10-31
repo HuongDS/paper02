@@ -32,7 +32,7 @@ def main():
     config = pd.get_dummies(d['format'],dtype=float)[['Rubric','Explainable','Researching']].to_numpy()
     full = np.column_stack([z.to_numpy(),config,student])
     max_error = 0.
-    for outcome in ['ACCEPTANCE','WILLINGNESS','BEHAVIORAL INTENTION']:
+    for outcome in ['ACCEPTANCE','PERSUASIVENESS','WILLINGNESS','BEHAVIORAL INTENTION']:
         coeff = np.linalg.lstsq(full,d[outcome].to_numpy(),rcond=None)[0]
         expected = np.array([a['within_student_models_configuration_adjusted'][outcome][k]['b'] for k in z.columns])
         error = float(np.max(np.abs(coeff[:5]-expected)))
@@ -41,7 +41,7 @@ def main():
     context = (d.context=='Codebase').astype(float).to_numpy()
     aai_items = ['ACCURACY','SPECIFICITY','CLARITY','TRANSPARENCY','USEFULNESS','ACTIONABILITY',
         'COMPETENCE TRUST','RELIABILITY','FAIRNESS','AFFECT','PSYCHOLOGICAL SAFETY',
-        'ACCEPTANCE','WILLINGNESS','BEHAVIORAL INTENTION']
+        'ACCEPTANCE','PERSUASIVENESS','WILLINGNESS','BEHAVIORAL INTENTION']
     d['AAI'] = d[aai_items].mean(axis=1)
     cb = np.linalg.lstsq(np.column_stack([context,config,student]),d.AAI.to_numpy(),rcond=None)[0][0]
     context_error = abs(float(cb)-a['context_within_student']['b_raw'])

@@ -22,7 +22,7 @@ import pandas as pd
 
 ITEMS = ['ACCURACY', 'SPECIFICITY', 'CLARITY', 'TRANSPARENCY', 'USEFULNESS',
          'ACTIONABILITY', 'COMPETENCE TRUST', 'RELIABILITY', 'FAIRNESS', 'AFFECT',
-         'PSYCHOLOGICAL SAFETY', 'ACCEPTANCE', 'REJECTION', 'WILLINGNESS',
+         'PSYCHOLOGICAL SAFETY', 'ACCEPTANCE', 'PERSUASIVENESS', 'WILLINGNESS',
          'BEHAVIORAL INTENTION']
 FORMATS = ['Sandwich', 'Rubric', 'Explainable', 'Researching']
 B = 5000
@@ -90,10 +90,10 @@ def main():
         for fmt in FORMATS}
     if not d.context.isin(['Codebase', 'Raw', 'Graph']).all():
         raise ValueError('Unknown context label')
-    d['AAI15'] = (d[[x for x in ITEMS if x != 'REJECTION']].sum(axis=1) + 6 - d.REJECTION) / 15
+    d['AAI15'] = (d[[x for x in ITEMS if x != 'PERSUASIVENESS']].sum(axis=1) + 6 - d.REJECTION) / 15
     d['AF'] = d[['AFFECT', 'PSYCHOLOGICAL SAFETY']].mean(axis=1)
     d['AI'] = d[['ACCEPTANCE', 'WILLINGNESS', 'BEHAVIORAL INTENTION']].mean(axis=1)
-    d['AAI'] = d[[x for x in ITEMS if x != 'REJECTION']].mean(axis=1)
+    d['AAI'] = d[[x for x in ITEMS if x != 'PERSUASIVENESS']].mean(axis=1)
     d['PQ'] = d[['ACCURACY', 'SPECIFICITY', 'CLARITY', 'TRANSPARENCY']].mean(axis=1)
     d['PU'] = d[['USEFULNESS', 'ACTIONABILITY']].mean(axis=1)
     d['TR'] = d[['COMPETENCE TRUST', 'RELIABILITY', 'FAIRNESS']].mean(axis=1)

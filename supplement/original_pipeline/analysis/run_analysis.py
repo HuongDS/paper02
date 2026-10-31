@@ -27,11 +27,11 @@ B = 5000
 
 ITEMS = ["ACCURACY", "SPECIFICITY", "CLARITY", "TRANSPARENCY", "USEFULNESS", "ACTIONABILITY",
          "COMPETENCE TRUST", "RELIABILITY", "FAIRNESS", "AFFECT", "PSYCHOLOGICAL SAFETY",
-         "ACCEPTANCE", "REJECTION", "WILLINGNESS", "BEHAVIORAL INTENTION"]
+         "ACCEPTANCE", "PERSUASIVENESS", "WILLINGNESS", "BEHAVIORAL INTENTION"]
 SHORT = {"ACCURACY": "ACC", "SPECIFICITY": "SPE", "CLARITY": "CLA", "TRANSPARENCY": "TRA",
          "USEFULNESS": "USE", "ACTIONABILITY": "ACT", "COMPETENCE TRUST": "COM", "RELIABILITY": "REL",
          "FAIRNESS": "FAI", "AFFECT": "AFF", "PSYCHOLOGICAL SAFETY": "PSY", "ACCEPTANCE": "ACE",
-         "REJECTION": "REJ", "WILLINGNESS": "WIL", "BEHAVIORAL INTENTION": "BI"}
+         "PERSUASIVENESS": "PER", "WILLINGNESS": "WIL", "BEHAVIORAL INTENTION": "BI"}
 CONSTRUCTS = {
     "Perceived quality": ["ACCURACY", "SPECIFICITY", "CLARITY", "TRANSPARENCY"],
     "Perceived utility": ["USEFULNESS", "ACTIONABILITY"],
@@ -115,9 +115,9 @@ screen = {
     "rows_llm_unrated": int(((raw.origin == "llm") & ~raw.rated).sum()),
 }
 d = raw[(raw.origin == "llm") & raw.rated].copy()
-d["REJECTION_R"] = 6 - d["REJECTION"]
-ALL15 = [c if c != "REJECTION" else "REJECTION_R" for c in ITEMS]
-AAI14 = [c for c in ITEMS if c != "REJECTION"]
+d["REJECTION_R"] = 6 - d["PERSUASIVENESS"]
+ALL15 = [c if c != "PERSUASIVENESS" else "REJECTION_R" for c in ITEMS]
+AAI14 = [c for c in ITEMS if c != "PERSUASIVENESS"]
 d["AAI"] = d[AAI14].mean(axis=1)  # REJECTION analysed separately (see reliability)
 for k, v in CONSTRUCTS.items(): d[k] = d[v].mean(axis=1)
 d["sd_row"] = d[ITEMS].std(axis=1, ddof=0)
@@ -270,7 +270,7 @@ f_s, _ = friedman_block(ds, "AAI"); rq2["sensitivity_no_straight"] = f_s
 rq2["sensitivity_n_rows"] = int(len(ds)); rq2["sensitivity_means"] = ds.groupby("format")["AAI"].mean().to_dict()
 sub_icc = smf.mixedlm("AAI ~ 1", ds, groups=ds["sid"]).fit(reml=True)
 rq2["icc_nostraight"] = float(sub_icc.cov_re.iloc[0, 0] / (sub_icc.cov_re.iloc[0, 0] + sub_icc.scale))
-rej = friedman_block(d, "REJECTION")[0]; rq2["friedman_REJ"] = rej
+rej = friedman_block(d, "PERSUASIVENESS")[0]; rq2["friedman_REJ"] = rej
 R["rq2"] = rq2
 
 # ---------------------------------------------------------------- RQ3 (needs context labels)
@@ -305,7 +305,7 @@ else:
     R["rq3"] = "not available: question context labels (Raw/Graph) are not in the export"
 
 # ---------------------------------------------------------------- free-text replies
-rep = d[d.reply.astype(str).str.strip().ne("—") & d.reply.notna()][["format", "reply", "ACCEPTANCE", "REJECTION"]]
+rep = d[d.reply.astype(str).str.strip().ne("—") & d.reply.notna()][["format", "reply", "ACCEPTANCE", "PERSUASIVENESS"]]
 R["replies"] = {"count": int(len(rep)), "by_format": rep["format"].value_counts().to_dict(),
     "note": "Individual replies are withheld; this public artifact contains aggregate counts only."}
 
@@ -328,7 +328,7 @@ def fp(p):
 with open(TAB / "rq1_items.tex", "w") as f:
     for _, r in rq1.iterrows():
         name = r["item"].title().replace("Behavioral Intention", "Behav.\\ intention").replace("Psychological Safety", "Psych.\\ safety").replace("Competence Trust", "Competence trust")
-        if r["item"] == "REJECTION": name += "$^\\dagger$"
+        if r["item"] == "PERSUASIVENESS": name += "$^\\dagger$"
         f.write(f"{name} & {r['mean']:.2f} ({r['sd']:.2f}) & [{r['lo']:.2f}, {r['hi']:.2f}] & {r['agree']:.1f} & {r['disagree']:.1f} & {r['rrb']:.2f} & {fp(r['p_holm'])} \\\\\n")
 with open(TAB / "rq2_formats.tex", "w") as f:
     for k in ["AAI"] + list(CONSTRUCTS):
@@ -356,7 +356,7 @@ for i, r in order.iterrows():
         ax.barh(i, w, left=left, color=LIK[k], height=0.62, edgecolor="white", linewidth=0.8)
         left += w
     ax.text(102, i, f"{r.agree:.0f}%", va="center", ha="right", fontsize=7, color=INK)
-lab = [s.title() + ("$^\\dagger$" if s == "REJECTION" else "") for s in order["item"]]
+lab = [s.title() + ("$^\\dagger$" if s == "PERSUASIVENESS" else "") for s in order["item"]]
 ax.set_yticks(y, lab, fontsize=7)
 ax.axvline(0, color=MUTED, lw=0.6)
 ax.set_xlim(-60, 104); ax.set_xticks([-50, -25, 0, 25, 50, 75], ["50", "25", "0", "25", "50", "75"])

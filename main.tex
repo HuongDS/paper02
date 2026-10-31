@@ -54,6 +54,60 @@
 \renewcommand\UrlFont{\color{blue}\rmfamily}
 \urlstyle{rm}
 
+% -------------------------------------------------------------------------
+% 6. Compact Vertical Spacing (Eliminate Excessive Whitespace)
+% -------------------------------------------------------------------------
+\raggedbottom
+\setlength{\emergencystretch}{1.5em}
+\setlength{\textfloatsep}{8pt plus 2pt minus 2pt}
+\setlength{\floatsep}{6pt plus 2pt minus 2pt}
+\setlength{\intextsep}{6pt plus 2pt minus 2pt}
+\setlength{\abovecaptionskip}{4pt plus 1pt minus 1pt}
+\setlength{\belowcaptionskip}{2pt plus 1pt minus 1pt}
+\makeatletter
+\renewcommand\section{\@startsection{section}{1}{\z@}%
+                       {-10\p@ \@plus -2\p@ \@minus -2\p@}%
+                       {5\p@ \@plus 1\p@ \@minus 1\p@}%
+                       {\normalfont\large\bfseries\boldmath
+                        \rightskip=\z@ \@plus 8em\pretolerance=10000 }}
+\renewcommand\subsection{\@startsection{subsection}{2}{\z@}%
+                       {-8\p@ \@plus -2\p@ \@minus -2\p@}%
+                       {4\p@ \@plus 1\p@ \@minus 1\p@}%
+                       {\normalfont\normalsize\bfseries\boldmath
+                        \rightskip=\z@ \@plus 8em\pretolerance=10000 }}
+\renewcommand\subsubsection{\@startsection{subsubsection}{3}{\z@}%
+                       {-7\p@ \@plus -2\p@ \@minus -2\p@}%
+                       {-0.5em \@plus -0.22em \@minus -0.1em}%
+                       {\normalfont\normalsize\bfseries\boldmath}}
+\renewcommand\paragraph{\@startsection{paragraph}{4}{\z@}%
+                       {-5\p@ \@plus -1\p@ \@minus -1\p@}%
+                       {-0.5em \@plus -0.22em \@minus -0.1em}%
+                       {\normalfont\normalsize\itshape}}
+\def\@listI{\leftmargin\leftmargini
+            \parsep 0\p@ \@plus1\p@ \@minus\p@
+            \topsep 4\p@ \@plus1\p@ \@minus2\p@
+            \itemsep 0\p@}
+\let\@listi\@listI
+\@listi
+\renewenvironment{credits}{%
+\begingroup\small%
+\renewcommand\subsubsection{\@startsection{subsubsection}{3}{\z@}%
+        {-6\p@ \@plus -2\p@ \@minus -2\p@}%
+        {-0.5em \@plus -0.22em \@minus -0.1em}%
+        {\normalfont\small\bfseries\boldmath}}
+\renewcommand\paragraph{\@startsection{paragraph}{4}{\z@}%
+        {-5\p@ \@plus -1\p@ \@minus -1\p@}%
+        {-0.5em \@plus -0.22em \@minus -0.1em}%
+        {\normalfont\small\itshape}}%
+}{\endgroup}
+\makeatother
+\AtBeginDocument{%
+  \setlength{\abovedisplayskip}{5pt plus 1pt minus 1pt}%
+  \setlength{\belowdisplayskip}{5pt plus 1pt minus 1pt}%
+  \setlength{\abovedisplayshortskip}{2pt plus 1pt}%
+  \setlength{\belowdisplayshortskip}{3pt plus 1pt minus 1pt}%
+}
+
 % Conditional flag for RQ3 section (set \rqthreefalse to suppress)
 \newif\ifrqthree
 \rqthreetrue
@@ -202,12 +256,12 @@ When a student submits a batch of $k = 4$ scenario answers across distinct busin
 
 Upon batch submission, PACE shuffles the four feedback configurations without replacement ($\mathcal{F} = \{\text{Sandwich},$ $\text{Rubric},$ $\text{Explainable},$ $\text{Researching}\}$) and assigns one configuration to each of the student's four answers. Three configurations invoke a single LLM call to the DeepSeek API (default model alias \texttt{deepseek-chat}, temperature $0.2$, \texttt{json\_object} mode) with format-specific JSON schema rules:
 \begin{itemize}
-    \item \textbf{Sandwich} requires keys \texttt{feedback\_type}, \texttt{positives}, \texttt{constructive\_criticism}, and \texttt{next\_steps} (specific methods/classes to review).
+    \item \textbf{Sandwich} requires keys \texttt{feedback\_type}, \texttt{positives}, \texttt{constructive\_\allowbreak criticism}, and \texttt{next\_steps} (specific methods/classes to review).
     \item \textbf{Rubric} requires \texttt{feedback\_type} and a \texttt{criteria} array of objects with \texttt{name}, integer \texttt{score} ($1\text{--}5$), and \texttt{comment} (without an explicit \texttt{next\_steps} field).
     \item \textbf{Explainable} requires \texttt{feedback\_type}, \texttt{code\_evidence} (citing methods, files, or branch conditions from the context), and \texttt{logic\_explanation}.
     \item \textbf{Researching} is designed as a two-stage pipeline: Stage~1 prompts DeepSeek (\texttt{deepseek-chat}, temperature $0.2$) as a \textit{Code Inspector} to return JSON with \texttt{code\_evidence}, \texttt{technical\_accuracy}, and \texttt{logical\_flaws}; Stage~2 passes the question, answer, Stage~1 report, and reference context to Groq (default model \texttt{openai/gpt-oss-120b}, temperature $0.2$, \texttt{json\_object}, up to 3 attempts with exponential backoff on HTTP~429) as a \textit{Pedagogical Synthesizer} to output a JSON object combining \texttt{comment}, \texttt{positives}, \texttt{constructive\_criticism}, \texttt{next\_steps}, \texttt{code\_evidence}, \texttt{logic\_explanation}, two scored \texttt{criteria} (\emph{source-code technical accuracy} and \emph{architecture/flow comprehension}), and a nested \texttt{researching} object (\texttt{consensus\_summary}, \texttt{code\_inspection}, \texttt{pedagogical\_guidance}, and \texttt{models\_involved}).
 \end{itemize}
-Crucially, if Stage~1 or Stage~2 fails, times out, returns invalid JSON, or if the Groq key is unconfigured, the service automatically falls back to single-model DeepSeek evaluation using the \texttt{Researching} JSON schema template. Because that fallback schema template itself specifies both \texttt{DeepSeek-V3 (Code Inspector)} and \texttt{Groq-GPT-OSS-120B (Pedagogical Synthesizer)} inside \texttt{models\_involved}, all 86 exported \texttt{Researching} records contain both model names in nested JSON metadata, but this metadata reflects the schema template of the \emph{assigned configuration} rather than an independent provider execution log proving that both models executed on every instance. Similarly, one assigned \texttt{Rubric} record in the dataset contains an input-guardrail refusal payload (populating \texttt{positives}, \texttt{constructive\_criticism}, \texttt{next\_steps}, and \texttt{comment} instead of \texttt{criteria}) while the other 85 contain \texttt{criteria}. Full verbatim prompts, JSON schemas, and four de-identified feedback examples (one per configuration from the study export) are provided in the accompanying supplement (Sections~S1--S6).
+Crucially, if Stage~1 or Stage~2 fails, times out, returns invalid JSON, or if the Groq key is unconfigured, the service automatically falls back to single-model DeepSeek evaluation using the \texttt{Researching} JSON schema template. Because that fallback schema template itself specifies both \texttt{DeepSeek-V3 (Code Inspector)} and \texttt{Groq-GPT-OSS-120B (Pedagogical Synthesizer)} inside \texttt{models\_\allowbreak involved}, all 86 exported \texttt{Researching} records contain both model names in nested JSON metadata, but this metadata reflects the schema template of the \emph{assigned configuration} rather than an independent provider execution log proving that both models executed on every instance. Similarly, one assigned \texttt{Rubric} record in the dataset contains an input-guardrail refusal payload (populating \texttt{positives}, \texttt{constructive\_criticism}, \texttt{next\_steps}, and \texttt{comment} instead of \texttt{criteria}) while the other 85 contain \texttt{criteria}. Full verbatim prompts, JSON schemas, and four de-identified feedback examples (one per configuration from the study export) are provided in the accompanying supplement (Sections~S1--S6 in \path{supplement/}: \path{INSTRUMENT_VI.md}, \path{PROCEDURE_UI.md}, \path{PROMPTS_AND_SCHEMAS.md}, \path{FEEDBACK_EXAMPLES_DEIDENTIFIED.md}, \path{CONFIGURATION_PROFILES.md}, and \path{tables/EXPLORATORY_RESULTS.md}).
 
 % -------------------------------------------------------------------------
 \section{Experimental Design}
@@ -222,7 +276,7 @@ To prevent feedback on early questions from altering how students composed subse
 
 \subsection{Survey Instrumentation}
 
-For each of their four evaluated answers, students rated all 15 statements on a five-point Likert scale ($1 = \text{Strongly disagree}$ to $5 = \text{Strongly agree}$) and could provide an optional free-text comment (160 non-empty replies; not qualitatively coded for prevalence claims). Drawing on formative feedback~\cite{shute2008focus}, TAM/UTAUT~\cite{davis1989perceived,venkatesh2003user}, trust in automation~\cite{lee2004trust}, argument persuasiveness, and psychological safety, Table~\ref{tab:instrument} presents the 15 positively keyed items grouped into six conceptual domains (reflecting the synchronized October 31 criterion specification; Supplement~S1 documents the exact Vietnamese wording and historical export column mapping).
+For each of their four evaluated answers, students rated all 15 statements on a five-point Likert scale ($1 = \text{Strongly disagree}$ to $5 = \text{Strongly agree}$) and could provide an optional free-text comment (160 non-empty replies; not qualitatively coded for prevalence claims). Drawing on formative feedback~\cite{shute2008focus}, TAM/UTAUT~\cite{davis1989perceived,venkatesh2003user}, trust in automation~\cite{lee2004trust}, argument persuasiveness, and psychological safety, Table~\ref{tab:instrument} presents the 15 positively keyed items grouped into six conceptual domains. The exact Vietnamese statements in Table~\ref{tab:instrument} (including Criterion~13 on argument persuasiveness) were displayed verbatim to students in the live survey UI throughout the October 20--26, 2026 collection window and were not modified during or after the survey; the October~31 metadata audit workbook only reconciled the English item code for Criterion~13 (\texttt{PERSUASIVENESS}, replacing a legacy \texttt{REJECTION} header tag in the raw export template; Supplement~S1, \texttt{supplement/INSTRUMENT\_VI.md}).
 
 \begin{table}[t]
 \caption{Survey instrument (translated from Vietnamese into English), comprising 15 positively keyed Likert items grouped into six conceptual constructs.}
@@ -279,7 +333,7 @@ To account for clustering of observations within students, questions, and shared
 Direct agreement with the AI's evaluative judgment is measured by the single item \texttt{ACCEPTANCE}, while argument conviction (\texttt{PERSUASIVENESS}), learning motivation (\texttt{AFFECT}), revision readiness (\texttt{WILLINGNESS}), and future-use intention (\texttt{BEHAVIORAL INTENTION}) are treated as distinct outcomes. As a secondary exploratory summary, we define the \emph{AI Agreement Index} (AAI) as the unweighted mean across all 15 items (assigning equal weight $1/15$ to each item rather than weighting conceptual domains equally). We compute Cronbach's $\alpha$~\cite{cronbach1951coefficient} and McDonald's $\omega_t$ from a one-factor principal-axis solution~\cite{hayes2020use} on the pooled 344-row covariance matrix; because this pooled matrix mixes within- and between-student covariance and no confirmatory factor analysis was conducted, high $\alpha$ or $\omega_t$ values describe pooled score consistency and do \emph{not} validate the multidimensional construct groupings in Table~\ref{tab:instrument}.
 
 \paragraph{RQ1 (Item Distributions and Within-Student Regressions).}
-We report item means, standard deviations, and 95\% percentile confidence intervals from cluster-bootstrapping all 28 repositories with replacement ($5{,}000$ replicates, seed \texttt{20261029}). To examine contemporaneous within-student associations with three single-item outcomes—$y \in \{\texttt{ACCEPTANCE}, \texttt{WILLINGNESS}, \texttt{BEHAVIORAL INTENTION}\}$—we fitted student fixed-effects linear regressions by demeaning predictors and outcomes within each student $j$:
+We report item means, standard deviations, and 95\% percentile confidence intervals from cluster-bootstrapping all 28 repositories with replacement ($5{,}000$ replicates, seed \texttt{20261029}). To examine contemporaneous within-student associations with three single-item outcomes ($y \in \{\texttt{ACCEPTANCE},$ $\texttt{WILLINGNESS},$ $\texttt{BEHAVIORAL INTENTION}\}$), we fitted student fixed-effects linear regressions by demeaning predictors and outcomes within each student $j$:
 \begin{equation}
  y_{ij}-\bar y_j = \sum_{k=1}^{5}\beta_k(z_{kij}-\bar z_{kj}) + \sum_{c=2}^{4}\gamma_c(D_{cij}-\bar D_{cj}) + e_{ij},
  \label{eq:drivers}
@@ -299,9 +353,9 @@ Because the complexity router ($\tau = 10$) deterministically assigns \texttt{Ra
 \subsection{Reliability and Data Quality}
 \label{sec:quality}
 
-Across the pooled 344 rating instances, the 15 items yielded Cronbach's $\alpha = 0.916$ and one-factor McDonald's $\omega_t = 0.930$. Pooled internal consistency estimates for the regression predictor groupings were $\alpha = 0.91$ for the four-item \emph{Perceived Quality} composite (\texttt{ACCURACY}, \texttt{SPECIFICITY}, \texttt{CLARITY}, \texttt{TRANSPARENCY}), $0.78$ for the two-item \emph{Perceived Utility} composite (\texttt{USEFULNESS}, \texttt{ACTIONABILITY}), $0.80$ for the three-item \emph{Trust \& Fairness} composite (\texttt{COMPETENCE TRUST}, \texttt{RELIABILITY}, \texttt{FAIRNESS}), and $0.78$ across the three outcome items (\texttt{ACCEPTANCE}, \texttt{WILLINGNESS}, \texttt{BEHAVIORAL INTENTION}). The two-item \emph{Affect \& Safety} pair (\texttt{AFFECT} and \texttt{PSYCHOLOGICAL SAFETY}) showed low consistency ($\alpha = 0.56$), supporting their treatment as separate single-item predictors in Eq.~\ref{eq:drivers}. Because these statistics are computed on pooled repeated-instance observations without confirmatory factor modeling, high $\alpha$ and $\omega_t$ values do not establish unidimensionality, validate the six-domain conceptual structure in Table~\ref{tab:instrument}, or measure within-student reliability.
+Across the pooled 344 rating instances, the 15 items yielded Cronbach's $\alpha = 0.916$ and one-factor McDonald's $\omega_t = 0.930$. Pooled internal consistency estimates for the regression predictor groupings were $\alpha = 0.905$ for the four-item \emph{Perceived Quality} composite (\texttt{ACCURACY}, \texttt{SPECIFICITY}, \texttt{CLARITY}, \texttt{TRANSPARENCY}), $0.783$ ($0.78$) for the two-item \emph{Perceived Utility} composite (\texttt{USEFULNESS}, \texttt{ACTIONABILITY}), $0.796$ ($0.80$) for the three-item \emph{Trust \& Fairness} composite (\texttt{COMPETENCE TRUST}, \texttt{RELIABILITY}, \texttt{FAIRNESS}), and $0.780$ ($0.78$) across the three outcome items (\texttt{ACCEPTANCE}, \texttt{WILLINGNESS}, \texttt{BEHAVIORAL INTENTION}). The two-item \emph{Affect \& Safety} pair (\texttt{AFFECT} and \texttt{PSYCHOLOGICAL SAFETY}) showed low consistency ($\alpha = 0.561 \approx 0.56$), supporting their treatment as separate single-item predictors in Eq.~\ref{eq:drivers}. Because these statistics are computed on pooled repeated-instance observations without confirmatory factor modeling, high $\alpha$ and $\omega_t$ values do not establish unidimensionality, validate the six-domain conceptual structure in Table~\ref{tab:instrument}, or measure within-student reliability.
 
-To examine response-pattern anomalies, we identified 64 instances (18.6\%) exhibiting straight-lining (identical ratings across all 15 items), including 11 students (12.8\%) who straight-lined all four feedback instances. Excluding flagged rows yielded a pooled estimate of $\alpha = 0.90$. However, straight-lining is a descriptive response-pattern flag rather than proof of inattention, and excluding flagged rows does not establish psychometric validity or justify independent-observation inference~\cite{kim2019straightlining,vansonderen2013ineffectiveness}.
+To examine response-pattern anomalies, we identified 64 instances (18.6\%) exhibiting straight-lining (identical ratings across all 15 items), including 11 students (12.8\%) who straight-lined all four feedback instances. Excluding flagged rows yielded a pooled 15-item estimate of $\alpha = 0.868$ ($\approx 0.87$). However, straight-lining is a descriptive response-pattern flag rather than proof of inattention, and excluding flagged rows does not establish psychometric validity or justify independent-observation inference~\cite{kim2019straightlining,vansonderen2013ineffectiveness}.
 
 \subsection{RQ1: Item Ratings and Associations with Acceptance}
 
@@ -339,10 +393,10 @@ Item Code & Mean (SD) & 95\% CI & Agree (\%) & Disagree (\%) \\
 
 Table~\ref{tab:rq1} and Figure~\ref{fig:likert} summarize item ratings across all 344 feedback instances. The exploratory 15-item unweighted composite, the AI Agreement Index (AAI), averaged $3.99$ (SD $0.60$, 95\% repository-bootstrap CI $[3.85, 4.13]$). Fourteen of the fifteen items had mean ratings above the neutral midpoint ($3.0$) and explicit disagreement (ratings $\le 2$) at or below $7.3\%$, with the highest agreement rates observed for perceived usefulness ($84.0\%$), accuracy ($83.4\%$), specificity ($83.4\%$), fairness ($81.4\%$), and willingness to revise ($81.4\%$). By contrast, \texttt{PERSUASIVENESS} had a mean below the neutral midpoint at $2.87$ (SD $1.22$, 95\% CI $[2.56, 3.20]$), with $30.8\%$ agreement and $48.8\%$ disagreement.
 
-\begin{figure}[H]
+\begin{figure}[!htb]
 \centering
 \vspace{-2mm}
-\includegraphics[width=0.74\textwidth]{figures/likert_items.pdf}
+\includegraphics[width=0.72\textwidth]{figures/likert_items.pdf}
 \Description{Diverging stacked bar chart of the fifteen items, sorted by percentage of agreement from Usefulness (84 percent) at the top to Affect (42 percent) and Persuasiveness (30.8 percent, displayed as 31 percent) at the bottom. Disagreement segments to the left of zero are short for all items except Persuasiveness (48.8 percent disagree); Affect has a large neutral segment.}
 \caption{Distribution of ratings per item, sorted by the share of agreement (right-hand labels). Neutral ratings are centred on zero.}
 \label{fig:likert}

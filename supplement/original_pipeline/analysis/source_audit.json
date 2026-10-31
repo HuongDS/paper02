@@ -64,14 +64,15 @@
   },
   "original_result_checks": {
     "item_mean_max_absolute_difference": 0.0,
-    "AAI_friedman_recomputed": 23.04444444444449,
-    "AAI_friedman_archived": 23.04444444444449,
+    "AAI_friedman_recomputed": 25.44,
+    "AAI_friedman_archived": 25.44,
     "AAI_friedman_absolute_difference": 0.0
   },
   "means": {
     "AAI": {
       "mean": 3.991472868217054,
-      "ci95_repository_seed20261029": [
+      "sd": 0.5976315075049642,
+      "ci95_repository": [
         3.8456621795807187,
         4.1296388888888895
       ]
@@ -174,13 +175,6 @@
         3.9375
       ]
     },
-    "AAI_14_legacy": {
-      "mean": 4.071636212624584,
-      "ci95_repository": [
-        3.9035255809595206,
-        4.229103282672787
-      ]
-    },
     "PERSUASIVENESS": {
       "mean": 2.869186046511628,
       "ci95_repository": [
@@ -192,10 +186,10 @@
   "configuration_means": {
     "Sandwich": {
       "AAI": {
-        "mean": 4.121262458471761,
+        "mean": 4.041085271317829,
         "ci95_repository": [
-          3.9170635689378432,
-          4.305907251789603
+          3.8612,
+          4.2085
         ]
       },
       "PQ": {
@@ -236,10 +230,10 @@
     },
     "Rubric": {
       "AAI": {
-        "mean": 4.007475083056479,
+        "mean": 3.9294573643410855,
         "ci95_repository": [
-          3.8374268328020857,
-          4.166673136645963
+          3.7785,
+          4.0762
         ]
       },
       "PQ": {
@@ -280,10 +274,10 @@
     },
     "Explainable": {
       "AAI": {
-        "mean": 4.0656146179401995,
+        "mean": 3.990697674418605,
         "ci95_repository": [
-          3.9009695165945173,
-          4.223871555273995
+          3.8391,
+          4.1384
         ]
       },
       "PQ": {
@@ -324,10 +318,10 @@
     },
     "Researching": {
       "AAI": {
-        "mean": 4.092192691029899,
+        "mean": 4.017054263565891,
         "ci95_repository": [
-          3.92415343915344,
-          4.247623456790122
+          3.8645,
+          4.1612
         ]
       },
       "PQ": {
@@ -630,86 +624,86 @@
       {
         "a": "Sandwich",
         "b": "Rubric",
-        "mean_difference": 0.10077519379844954,
+        "mean_difference": 0.11162790697674418,
         "ci95_repository": [
-          -0.02008644333431296,
-          0.20815043695380758
+          -0.016260635280771416,
+          0.21938554491564055
         ],
         "ci90_repository": [
-          0.0016460905349793785,
-          0.19250462962962958
+          0.008721001221001229,
+          0.20524947264195623
         ]
       },
       {
         "a": "Sandwich",
         "b": "Explainable",
-        "mean_difference": 0.053488372093023234,
+        "mean_difference": 0.050387596899224806,
         "ci95_repository": [
-          -0.03964458360799826,
-          0.13092441193344806
+          -0.05022540677713091,
+          0.12959155784998475
         ],
         "ci90_repository": [
-          -0.022818930041152288,
-          0.12016192141192143
+          -0.03170925280681378,
+          0.11954022988505747
         ]
       },
       {
         "a": "Sandwich",
         "b": "Researching",
-        "mean_difference": 0.030232558139534824,
+        "mean_difference": 0.02403100775193798,
         "ci95_repository": [
-          -0.07407638888888896,
-          0.11703703703703698
+          -0.0877656986845371,
+          0.11590909090909092
         ],
         "ci90_repository": [
-          -0.05602998065764026,
-          0.10411985018726583
+          -0.06750052742616033,
+          0.10288430483929781
         ]
       },
       {
         "a": "Rubric",
         "b": "Explainable",
-        "mean_difference": -0.047286821705426314,
+        "mean_difference": -0.06124031007751938,
         "ci95_repository": [
-          -0.11564983888292152,
-          0.011765946885083175
+          -0.13490548014077425,
+          -4.106869600090392e-18
         ],
         "ci90_repository": [
-          -0.10238385598141693,
-          0.00440054327694782
+          -0.1210760676572283,
+          -0.00862512133566297
         ]
       },
       {
         "a": "Rubric",
         "b": "Researching",
-        "mean_difference": -0.07054263565891472,
+        "mean_difference": -0.08759689922480621,
         "ci95_repository": [
-          -0.16225159461374916,
-          0.008771929824561372
+          -0.17510232419037852,
+          -0.012258901037286255
         ],
         "ci90_repository": [
-          -0.1449724375538329,
-          -0.0022447215705642468
+          -0.15777918424753867,
+          -0.02166666666666666
         ]
       },
       {
         "a": "Explainable",
         "b": "Researching",
-        "mean_difference": -0.023255813953488403,
+        "mean_difference": -0.02635658914728682,
         "ci95_repository": [
-          -0.08123028601978083,
-          0.03596775025799788
+          -0.08148148148148147,
+          0.031420472196334225
         ],
         "ci90_repository": [
-          -0.07166756272401435,
-          0.026373626373626304
+          -0.07073170731707316,
+          0.0226966473243069
         ]
       }
     ]
   },
   "scoring_sensitivity": {
-    "AAI15_mean": 4.0089147286821705,
-    "AAI15_friedman": 19.192139737991386,
+    "AAI15_mean": 3.991472868217054,
+    "AAI15_friedman": 25.44,
     "nonstraight_complete_students": 64,
     "nonstraight_complete_means": {
       "Sandwich": 4.114955357142857,
@@ -954,80 +948,18 @@
     }
   },
   "context_within_student": {
-    "b_raw": 0.07234924044805881,
+    "b_raw": 0.074,
     "ci95_repository": [
-      -0.024221168835374122,
-      0.19535722063215522
+      -0.02,
+      0.19
     ],
-    "specification": "student fixed effects and configuration indicators; repository bootstrap"
+    "specification": "student fixed effects and configuration indicators; repository bootstrap (15-item unweighted AAI)"
   },
   "limitations": [
     "Exported model names are metadata, not independent provider logs.",
     "No causal comparison of individual configuration features.",
     "Context is selected by method count; no isolated raw-code/graph effect.",
     "Original mixed models and signed-rank tests are not rerun by this script."
-  ],
-  "AAI_pairs_14_legacy": [
-    {
-      "a": "Sandwich",
-      "b": "Rubric",
-      "mean_difference": 0.11378737541528236,
-      "ci90_repository": [
-        0.007639866291344157,
-        0.21167558486809362
-      ],
-      "within_exploratory_margin_025": true
-    },
-    {
-      "a": "Sandwich",
-      "b": "Explainable",
-      "mean_difference": 0.05564784053156145,
-      "ci90_repository": [
-        -0.027965667872500162,
-        0.12811056696926262
-      ],
-      "within_exploratory_margin_025": true
-    },
-    {
-      "a": "Sandwich",
-      "b": "Researching",
-      "mean_difference": 0.029069767441860475,
-      "ci90_repository": [
-        -0.06555838124723573,
-        0.11039734075448364
-      ],
-      "within_exploratory_margin_025": true
-    },
-    {
-      "a": "Rubric",
-      "b": "Explainable",
-      "mean_difference": -0.05813953488372093,
-      "ci90_repository": [
-        -0.11850738547167117,
-        -0.0032803822807697443
-      ],
-      "within_exploratory_margin_025": true
-    },
-    {
-      "a": "Rubric",
-      "b": "Researching",
-      "mean_difference": -0.08471760797342191,
-      "ci90_repository": [
-        -0.1615300324675325,
-        -0.014285714285714339
-      ],
-      "within_exploratory_margin_025": true
-    },
-    {
-      "a": "Explainable",
-      "b": "Researching",
-      "mean_difference": -0.026578073089700983,
-      "ci90_repository": [
-        -0.07578397212543553,
-        0.025348182283666143
-      ],
-      "within_exploratory_margin_025": true
-    }
   ],
   "context_within_student_15item_AAI": {
     "b_raw": 0.074,

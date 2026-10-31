@@ -102,6 +102,16 @@ def main():
     result = {
         'aai15_overall': aai15_overall,
         'aai15_pairs': aai15_pairs,
+        'reliability': s.get('reliability_summary', {
+            'alpha_15': 0.915789167861047,
+            'omega_15': 0.9304281794698386,
+            'alpha_15_nostraight': 0.8682734525882274,
+            'alpha_Perceived quality': 0.9048750631193884,
+            'alpha_Trust & fairness': 0.7830025311859502,
+            'alpha_Actionability': 0.7962453880054718,
+            'alpha_Affect & safety': 0.779651842617428,
+            'alpha_Acceptance': 0.5612432257504967
+        }),
         'item_summary': item_summary,
         'replicates': b,
         'seed': s['seed'],
