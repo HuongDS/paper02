@@ -135,14 +135,25 @@ The remainder of this paper is structured as follows: Section~\ref{sec:related_w
 
 % -------------------------------------------------------------------------
 \section{Related Work}
-\label{sec:related_work}
-Discuss relevant prior work in the literature. Citations are specified using square brackets and consecutive numbers. For single citations, use \cite{hattie2007power}. Multiple citations should be grouped and ordered numerically, such as \cite{shute2008focus,carless2018feedback,winstone2017supporting}. When author names are used in the text, write: Hattie and Timperley~\cite{hattie2007power} demonstrated that...
+\label{sec:related}\label{sec:related_work}
 
-\subsection{AI-Assisted Education and Feedback}
-Review existing approaches in automated feedback generation, large language models (LLMs), and cognitive load reduction in programming education.
+This work draws on three main research areas: automated formative feedback in computing education, student acceptance and perceptions of AI-generated guidance, and pedagogical feedback configurations in software engineering assessment.
 
-\subsection{Evaluation of Feedback Quality}
-Discuss prior frameworks evaluating constructive feedback, accuracy, transparency, and student receptivity.
+\subsection{LLM-Generated Feedback in Programming Education}
+
+Automated assessment in computing education predates the emergence of generative AI, with early diagnostic tools focusing primarily on static error detection rather than actionable next steps~\cite{keuning2019automated}. While recent evaluations demonstrate that off-the-shelf LLMs can effectively identify issues in code, they remain susceptible to hallucinating nonexistent defects or suggesting misleading fixes~\cite{hellas2023exploring,kiesler2023exploring,dai2023can}. To address these safety and reliability concerns, specialized systems such as \textit{CodeHelp} have demonstrated the potential of incorporating guardrails to provide scalable programming assistance without directly supplying complete solutions~\cite{liffiton2023codehelp}. Building on these foundations, our approach shifts the evaluation focus from isolated, beginner-level coding snippets to comprehensive explanations of business logic and system architecture across evolving, multi-language team repositories.
+
+\subsection{Student Perceptions and Acceptance of AI Feedback}
+
+Understanding how learners respond to automated feedback requires examining established technology acceptance and trust frameworks. According to the Technology Acceptance Model (TAM) and UTAUT, perceived usefulness and ease of use are important predictors of technology acceptance and use~\cite{davis1989perceived,venkatesh2003user}, whereas appropriate reliance on automation requires calibrating trust to actual system reliability~\cite{lee2004trust}. Psychological phenomena such as algorithm aversion, in which users prematurely abandon algorithmic recommendations after observing errors, coexist with instances of algorithm appreciation~\cite{dietvorst2015algorithm,logg2019algorithm}. In computing education, empirical studies have revealed diverse learner preferences and perceptions: Zhang et al.\ documented student preferences for feedback that explicitly references source code~\cite{zhang2024students}, Er et al.\ identified continued advantages of human instructor feedback~\cite{er2025assessing}, and Nazaretsky et al.\ demonstrated that student trust is sensitive to the perceived source of AI-generated feedback~\cite{nazaretsky2024ai}. These findings highlight the importance of evaluating multiple dimensions of learner perception, including acceptance, behavioral intention, trust, and affective responses, alongside technical correctness.
+
+\subsection{Pedagogical Feedback Configurations and Multi-Model Orchestration}
+
+Different formats of formative feedback are grounded in distinct pedagogical principles. Sandwich feedback (\textit{Sandwich}), which places constructive criticism between supportive remarks, has been shown in controlled studies to improve learners' affective responses, even when performance gains remain modest~\cite{parkes2013feedback}. Explicit scoring rubrics (\textit{Rubric}) establish transparent evaluation criteria and promote grading consistency~\cite{jonsson2007use}, while evidence-based explanations (\textit{Explainable}) can support appropriate trust calibration by providing transparent references to source code~\cite{khosravi2022explainable}. To mitigate grading biases and sycophancy observed in LLM-based evaluations (\textit{LLM-as-a-Judge})~\cite{zheng2023judging}, multi-agent debate and multi-model coordination architectures have been proposed to improve factual accuracy and objectivity in reasoning~\cite{du2024improving,zheng2023judging}. However, existing literature offers limited evidence from rigorous, randomized within-subject evaluations comparing these distinct formative feedback approaches, particularly when implemented through role-decoupled multi-model ensembles operating on authentic student capstone codebases.
+
+\paragraph{Position Relative to Prior Literature.}
+
+While prior work has used automated comprehension checks to assess program understanding~\cite{lehtinen2021lets}, our work extends this approach to a structured viva defense preparation workflow involving collaborative team repositories. Unlike studies focusing on isolated CS1 programming tasks or hypothetical model-generated code snippets~\cite{zhang2024students,lehtinen2024askai}, PACE investigates student perceptions of multiple AI feedback formats in the context of authentic, multi-language capstone projects. Furthermore, by implementing a complexity-aware hybrid context router ($\tau = 10$), a three-layer guardrail architecture with XML delimiter sandboxing, and a role-decoupled Multi-LLM Ensemble, this study provides an empirical evaluation of guardrailed, multi-format formative feedback in software engineering education.
 
 % -------------------------------------------------------------------------
 \section{Proposed Methodology and System Architecture}
