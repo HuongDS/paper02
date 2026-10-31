@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (MiKTeX 26.5) (preloaded format=pdflatex 2026.9.12)  31 OCT 2026 13:12
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (MiKTeX 26.5) (preloaded format=pdflatex 2026.9.12)  31 OCT 2026 14:48
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1292,10 +1292,17 @@ Underfull \hbox (badness 10000) in paragraph at lines 260--260
 []|\T1/ntxtt/m/n/7 BEHAVIORAL
  []
 
-[6] [7] [8] [9] [10]
+[6] [7] [8]
+<figures/likert_items.pdf, id=264, 343.81198pt x 244.10323pt>
+File: figures/likert_items.pdf Graphic file (type pdf)
+<use figures/likert_items.pdf>
+Package pdftex.def Info: figures/likert_items.pdf  used on input line 343.
+(pdftex.def)             Requested size: 256.87332pt x 182.3916pt.
+ [9 <./figures/likert_items.pdf>] [10]
 LaTeX Font Info:    Font shape `T1/ntxtlf/m/n' will be
-(Font)              scaled to size 6.6pt on input line 405.
- [11] [12] (main.bbl [13] [14]) [15] (main.aux)
+(Font)              scaled to size 6.6pt on input line 415.
+ [11] [12] (main.bbl [13]
+[14]) [15] (main.aux)
  ***********
 LaTeX2e <2026-06-01>
 L3 programming layer <2020/03/25>
@@ -1304,10 +1311,10 @@ Package rerunfilecheck Info: File `main.out' has not changed.
 (rerunfilecheck)             Checksum: C7B3B624B0051ABFECF285F6DFCFB23F;788.
  ) 
 Here is how much of TeX's memory you used:
- 27871 strings out of 467441
- 503148 string characters out of 5412424
- 914507 words of memory out of 5000000
- 56329 multiletter control sequences out of 15000+600000
+ 27881 strings out of 467441
+ 503418 string characters out of 5412424
+ 914652 words of memory out of 5000000
+ 56338 multiletter control sequences out of 15000+600000
  712051 words of font info for 256 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  92i,11n,94p,2256b,936s stack positions out of 10000i,1000n,20000p,200000b,200000s
@@ -1323,9 +1330,9 @@ x/fonts/type1/public/newtx/txsys.pfb><D:/TaiLieu_FA26/paper_tools/miktex/fonts/
 type1/public/newtx/ztmb.pfb><D:/TaiLieu_FA26/paper_tools/miktex/fonts/type1/pub
 lic/newtx/ztmr.pfb><D:/TaiLieu_FA26/paper_tools/miktex/fonts/type1/public/newtx
 /ztmri.pfb>
-Output written on main.pdf (15 pages, 301463 bytes).
+Output written on main.pdf (15 pages, 316324 bytes).
 PDF statistics:
- 487 PDF objects out of 1000 (max. 8388607)
- 95 named destinations out of 1000 (max. 500000)
- 35349 words of extra memory for PDF output out of 35830 (max. 10000000)
+ 498 PDF objects out of 1000 (max. 8388607)
+ 96 named destinations out of 1000 (max. 500000)
+ 35354 words of extra memory for PDF output out of 35830 (max. 10000000)
 
